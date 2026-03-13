@@ -1,0 +1,19 @@
+# Secrets
+.env
+
+# Backups (too large for Git)
+db/backups/*.sql
+
+# Node
+node_modules/
+.nuxt/
+.output/
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-zinc-950 text-zinc-300 font-sans selection:bg-zinc-800 selection:text-white antialiased;
+  }
+}
+
+@layer utilities {
+  .linear-bg {
+    @apply bg-zinc-950;
+  }
+  
+  .linear-panel {
+    @apply bg-zinc-900/40 border border-white/5 shadow-sm;
+  }
+
+  .linear-hover {
+    @apply hover:bg-white/[0.03] transition-colors duration-150;
+  }
+}
