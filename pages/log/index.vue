@@ -16,45 +16,15 @@
           class="w-64 bg-white/5 text-sm text-zinc-300 placeholder-zinc-600 rounded-lg pl-9 pr-3 py-1.5 border border-white/5 focus:outline-none focus:border-white/10 transition-colors"
         />
       </div>
-      <div class="relative" ref="typeDropdownRef">
-        <button
-          class="w-40 bg-white/5 text-sm text-zinc-400 rounded-lg px-3 py-1.5 border border-white/5 hover:border-white/10 transition-colors flex items-center justify-between"
-          @click="showTypeDropdown = !showTypeDropdown"
-        >
-          <span :class="filterType ? 'text-zinc-300' : ''">{{ filterType ? typeOptions.find(o => o.value === filterType)?.label : 'All types' }}</span>
-          <UIcon name="i-heroicons-chevron-down" class="w-3.5 h-3.5" />
-        </button>
-        <div v-if="showTypeDropdown" class="absolute top-full left-0 mt-1 w-44 bg-zinc-900 border border-white/10 rounded-lg shadow-xl z-50 py-1 overflow-hidden">
-          <button
-            v-for="opt in typeOptions"
-            :key="opt.value"
-            class="w-full text-left px-3 py-1.5 text-sm transition-colors"
-            :class="filterType === opt.value ? 'text-white bg-white/10' : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'"
-            @click="filterType = opt.value; showTypeDropdown = false"
-          >{{ opt.label }}</button>
-        </div>
-      </div>
-      <div class="relative" ref="moodDropdownRef">
-        <button
-          class="w-40 bg-white/5 text-sm text-zinc-400 rounded-lg px-3 py-1.5 border border-white/5 hover:border-white/10 transition-colors flex items-center justify-between"
-          @click="showMoodDropdown = !showMoodDropdown"
-        >
-          <span :class="filterMood ? 'text-zinc-300' : ''">{{ filterMood ? moodOptions.find(o => o.value === filterMood)?.label : 'All moods' }}</span>
-          <UIcon name="i-heroicons-chevron-down" class="w-3.5 h-3.5" />
-        </button>
-        <div v-if="showMoodDropdown" class="absolute top-full left-0 mt-1 w-44 bg-zinc-900 border border-white/10 rounded-lg shadow-xl z-50 py-1 overflow-hidden">
-          <button
-            v-for="opt in moodOptions"
-            :key="opt.value"
-            class="w-full text-left px-3 py-1.5 text-sm transition-colors flex items-center gap-2"
-            :class="filterMood === opt.value ? 'text-white bg-white/10' : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'"
-            @click="filterMood = opt.value; showMoodDropdown = false"
-          >
-            <UIcon v-if="opt.value" :name="moodIcon(opt.value)" :class="['w-3.5 h-3.5', moodIconColor(opt.value)]" />
-            {{ opt.label }}
-          </button>
-        </div>
-      </div>
+      <UiFilterDropdown v-model="filterType" :options="TYPE_OPTIONS" placeholder="All types" />
+      <UiFilterDropdown v-model="filterMood" :options="MOOD_OPTIONS" placeholder="All moods">
+        <template #option="{ option, isActive }">
+          <span class="flex items-center gap-2">
+            <UIcon v-if="option.value" :name="moodIcon(option.value)" :class="['w-3.5 h-3.5', moodIconColor(option.value)]" />
+            {{ option.label }}
+          </span>
+        </template>
+      </UiFilterDropdown>
       <span class="ml-auto text-xs text-zinc-500">{{ total }} entries</span>
     </div>
 
@@ -109,46 +79,17 @@
 </template>
 
 <script setup lang="ts">
-const { entryIcon, typeLabel, typeColor, typeIconColor, moodIcon, moodIconColor } = useEntryHelpers()
+import { formatDate } from '~/composables/useFormatDate'
+import { TYPE_OPTIONS, MOOD_OPTIONS } from '~/composables/useEntryHelpers'
+
+const { entryIcon, typeLabel, typeIconColor, moodIcon, moodIconColor } = useEntryHelpers()
 
 const search = ref('')
 const filterType = ref('')
 const filterMood = ref('')
-const showTypeDropdown = ref(false)
-const showMoodDropdown = ref(false)
-const typeDropdownRef = ref<HTMLElement>()
-const moodDropdownRef = ref<HTMLElement>()
 
-function onClickOutside(event: MouseEvent) {
-  if (typeDropdownRef.value && !typeDropdownRef.value.contains(event.target as Node)) {
-    showTypeDropdown.value = false
-  }
-  if (moodDropdownRef.value && !moodDropdownRef.value.contains(event.target as Node)) {
-    showMoodDropdown.value = false
-  }
-}
-
-onMounted(() => document.addEventListener('click', onClickOutside))
-onUnmounted(() => document.removeEventListener('click', onClickOutside))
 const page = ref(1)
 const limit = 20
-
-const typeOptions = [
-  { label: 'All types', value: '' },
-  { label: 'Journal', value: 'journal' },
-  { label: 'Reflection', value: 'reflection' },
-  { label: 'Decision', value: 'decision' },
-  { label: 'Therapy', value: 'therapy' },
-]
-
-const moodOptions = [
-  { label: 'All moods', value: '' },
-  { label: 'Great', value: 'great' },
-  { label: 'Good', value: 'good' },
-  { label: 'Neutral', value: 'neutral' },
-  { label: 'Low', value: 'low' },
-  { label: 'Bad', value: 'bad' },
-]
 
 const queryParams = computed(() => {
   const params: Record<string, string | number> = {
@@ -172,12 +113,4 @@ const total = computed(() => data.value?.total ?? 0)
 function contentPreview(content: string) {
   return content.replace(/\n/g, ' ').trim().slice(0, 120)
 }
-
-function formatDate(dateStr: string) {
-  const [year, month, day] = dateStr.split('-')
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  return `${months[parseInt(month) - 1]} ${parseInt(day)}, ${year}`
-}
-
 </script>
-

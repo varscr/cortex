@@ -88,24 +88,7 @@
             />
 
             <!-- Tags -->
-            <div class="flex items-center gap-2 min-w-[200px]">
-              <div v-if="form.tags.length" class="flex gap-1 flex-wrap">
-                <span
-                  v-for="(tag, i) in form.tags"
-                  :key="tag"
-                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 text-xs cursor-pointer hover:bg-zinc-700 transition-colors"
-                  @click="form.tags.splice(i, 1)"
-                >
-                  {{ tag }} <span class="opacity-60">&times;</span>
-                </span>
-              </div>
-              <input
-                v-model="tagInput"
-                placeholder="Add tag..."
-                class="bg-transparent border-0 text-sm text-zinc-400 placeholder-zinc-600 outline-none flex-1 min-w-[80px]"
-                @keydown.enter.prevent="addTag"
-              />
-            </div>
+            <UiTagInput v-model="form.tags" />
           </div>
         </div>
 
@@ -141,7 +124,6 @@ const form = reactive({
 })
 
 const fileInput = ref<HTMLInputElement>()
-const tagInput = ref('')
 const saving = ref(false)
 const extracting = ref(false)
 
@@ -172,14 +154,6 @@ async function handleImageUpload(e: Event) {
     extracting.value = false
     fileInput.value!.value = ''
   }
-}
-
-function addTag() {
-  const tag = tagInput.value.trim().toLowerCase()
-  if (tag && !form.tags.includes(tag)) {
-    form.tags.push(tag)
-  }
-  tagInput.value = ''
 }
 
 async function submit() {

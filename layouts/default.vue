@@ -100,8 +100,8 @@ const { isCollapsed, toggle } = useSidebar()
 const links = [
   { label: 'Dashboard', icon: 'i-heroicons-home', to: '/' },
   { label: 'Profile', icon: 'i-heroicons-user', to: '/profile' },
+  { label: 'Log', icon: 'i-heroicons-book-open', to: '/log' },
   { label: 'Finances', icon: 'i-heroicons-banknotes', to: '/finances' },
   { label: 'Trading', icon: 'i-heroicons-chart-bar', to: '/trading' },
-  { label: 'Log', icon: 'i-heroicons-book-open', to: '/log' },
 ]
 </script>
