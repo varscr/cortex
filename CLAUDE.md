@@ -45,7 +45,7 @@ Auto-imported by Nuxt. Each module has three files in `server/utils/`:
 - `<module>-validate.ts` — returns `{ data?, error? }`, caller throws `createError({ statusCode, statusMessage })`
 - `<module>-transform.ts` — snake_case Row to camelCase API, null arrays to `[]`, NUMERIC to `parseFloat()`
 
-Existing modules: log, kanban, trading, finances, profile
+Existing modules: log, kanban, trading, finances, profile, knowledge
 
 ## API Routes
 File-based routing at `server/api/<module>/` using Nuxt conventions:
@@ -94,11 +94,36 @@ Vue 3 Composition API (`ref`, `reactive`, `computed`) — no Pinia, keep state l
 Native HTML + manual validation in submit handler.
 
 ## Modules
-log, finances, trading, kanban, profile — each with full CRUD API + types/validate/transform utils.
+log, finances, trading, kanban, profile, knowledge — each with full CRUD API + types/validate/transform utils.
+
+## Agent System
+LLM-powered agents defined by TOML config files in `agents/` directory.
+
+### Architecture
+- `server/utils/llm-types.ts` — LLM driver interfaces, agent config/run types
+- `server/utils/llm-driver-claude-cli.ts` — Claude Code CLI subprocess driver
+- `server/utils/llm-driver-factory.ts` — provider → driver factory
+- `server/utils/agent-loader.ts` — reads TOML configs from `agents/`
+- `server/utils/agent-runner.ts` — `runAgent(name, input)` → `CompletionResponse`
+
+### Adding a new agent
+Create a `.toml` file in `agents/` with `name`, `description`, and `[model]` section. No code changes needed.
+
+### Adding a new LLM provider
+Create `llm-driver-{name}.ts` implementing `LlmDriver`, add a `case` in `llm-driver-factory.ts`.
+
+### Knowledge Ingest
+- `POST /api/agents/ingest` — accepts Claude.ai export JSON, returns `{ runId }` (202)
+- `GET /api/agents/runs` — list agent run history
+- `GET /api/agents/runs/:id` — get run status + progress
+- Pipeline in `server/utils/knowledge-ingest.ts` — sequential processing, background execution
+- Dependency: `smol-toml` (TOML parser)
+- Docker: Claude CLI installed in container, host `~/.claude` mounted read-only
 
 ## Database Schema
 - Schema in `db/init/01-schema.sql` — runs automatically on first `docker compose up`
-- Schema changes: edit `01-schema.sql` (all `IF NOT EXISTS`) or add a new numbered file
+- Agent schema in `db/init/03-agent-schema.sql` — `knowledge_entries` + `agent_runs` tables
+- Schema changes: edit existing file (all `IF NOT EXISTS`) or add a new numbered file
 
 ## Do NOT
 - Use an ORM — raw SQL with pg only

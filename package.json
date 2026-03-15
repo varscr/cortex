@@ -11,7 +11,8 @@
     "@nuxtjs/google-fonts": "^3.2.0",
     "nuxt": "^3.15.0",
     "openai": "^4.77.0",
-    "pg": "^8.13.0"
+    "pg": "^8.13.0",
+    "smol-toml": "^1.6.0"
   },
   "devDependencies": {
     "@types/pg": "^8.11.0"
