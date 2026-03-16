@@ -1,4 +1,4 @@
-import { execFile } from 'node:child_process'
+import { spawn } from 'node:child_process'
 import type { LlmDriver, CompletionRequest, CompletionResponse } from './llm-types'
 
 const SENSITIVE_ENV_KEYS = ['OPENAI_API_KEY', 'BINGX_API_KEY', 'BINGX_SECRET_KEY']
@@ -25,7 +25,7 @@ export class ClaudeCliDriver implements LlmDriver {
 
   complete(request: CompletionRequest): Promise<CompletionResponse> {
     const prompt = buildPrompt(request.messages)
-    const args = ['-p', prompt, '--output-format', 'json', '--no-session-persistence']
+    const args = ['-p', '-', '--output-format', 'json', '--no-session-persistence']
 
     if (request.model) {
       args.push('--model', request.model)
@@ -35,27 +35,41 @@ export class ClaudeCliDriver implements LlmDriver {
       args.push('--system-prompt', request.system)
     }
 
-    if (request.maxTokens) {
-      args.push('--max-tokens', String(request.maxTokens))
-    }
-
     const start = Date.now()
 
     return new Promise((resolve, reject) => {
-      execFile('claude', args, {
+      const proc = spawn('claude', args, {
         env: cleanEnv(),
-        maxBuffer: 10 * 1024 * 1024,
+        stdio: ['pipe', 'pipe', 'pipe'],
         timeout: 5 * 60 * 1000,
-      }, (error, stdout, stderr) => {
+      })
+
+      let stdout = ''
+      let stderr = ''
+
+      proc.stdout.on('data', (data) => { stdout += data.toString() })
+      proc.stderr.on('data', (data) => { stderr += data.toString() })
+
+      proc.on('error', (err) => {
+        reject(new Error(`Claude CLI spawn failed: ${err.message}`))
+      })
+
+      proc.on('close', (code) => {
         const durationMs = Date.now() - start
 
-        if (error) {
+        if (code !== 0) {
           console.error('[claude-cli] stderr:', stderr)
-          return reject(new Error(`Claude CLI failed: ${error.message}`))
+          return reject(new Error(`Claude CLI exited with code ${code}: ${stderr || stdout}`))
         }
 
         try {
           const parsed = JSON.parse(stdout)
+
+          // Check for "Not logged in" response
+          if (parsed.is_error && parsed.result?.includes('Not logged in')) {
+            return reject(new Error('Claude CLI not logged in. Check credentials mount.'))
+          }
+
           resolve({
             text: parsed.result ?? parsed.text ?? stdout,
             usage: {
@@ -65,7 +79,6 @@ export class ClaudeCliDriver implements LlmDriver {
             durationMs,
           })
         } catch {
-          // If JSON parsing fails, the raw output is the result
           resolve({
             text: stdout.trim(),
             usage: { inputTokens: 0, outputTokens: 0 },
@@ -73,6 +86,10 @@ export class ClaudeCliDriver implements LlmDriver {
           })
         }
       })
+
+      // Write prompt via stdin and close
+      proc.stdin.write(prompt)
+      proc.stdin.end()
     })
   }
 }

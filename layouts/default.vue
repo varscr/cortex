@@ -103,5 +103,6 @@ const links = [
   { label: 'Log', icon: 'i-heroicons-book-open', to: '/log' },
   { label: 'Finances', icon: 'i-heroicons-banknotes', to: '/finances' },
   { label: 'Trading', icon: 'i-heroicons-chart-bar', to: '/trading' },
+  { label: 'Knowledge', icon: 'i-heroicons-academic-cap', to: '/knowledge' },
 ]
 </script>

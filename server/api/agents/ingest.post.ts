@@ -21,9 +21,10 @@ export default defineEventHandler(async (event) => {
     if (!conv.uuid || typeof conv.uuid !== 'string') {
       throw createError({ statusCode: 400, statusMessage: `conversations[${i}]: missing or invalid uuid` })
     }
-    if (!conv.name || typeof conv.name !== 'string') {
+    if (typeof conv.name !== 'string') {
       throw createError({ statusCode: 400, statusMessage: `conversations[${i}]: missing or invalid name` })
     }
+    if (!conv.name) conv.name = 'Untitled conversation'
     if (!Array.isArray(conv.chat_messages)) {
       throw createError({ statusCode: 400, statusMessage: `conversations[${i}]: missing or invalid chat_messages array` })
     }
