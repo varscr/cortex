@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen linear-bg flex flex-col md:flex-row">
+  <div class="h-screen linear-bg flex flex-col md:flex-row overflow-hidden">
     <!-- Sidebar Spacer (participates in flex layout, controls content shift) -->
     <div
       class="hidden md:block flex-shrink-0 transition-all duration-300"
@@ -76,8 +76,17 @@
         <div class="flex-1">
           <!-- Optional breadcrumbs or page tools here -->
         </div>
-        <div class="flex items-center gap-4">
+        <div v-if="!chatOpen" class="flex items-center gap-4">
+          <button
+            class="w-9 h-9 flex items-center justify-center rounded-md text-zinc-500 hover:text-white hover:bg-white/5 transition-colors"
+            :class="chatOpen ? 'text-white bg-white/5' : ''"
+            title="Chat"
+            @click="toggleChat"
+          >
+            <UIcon name="i-heroicons-command-line" class="w-5 h-5" />
+          </button>
         </div>
+        <div v-else class="w-9" />
       </header>
 
       <!-- Page Render -->
@@ -87,6 +96,9 @@
         </div>
       </main>
     </div>
+
+    <!-- Chat Panel -->
+    <ChatPanel />
   </div>
 </template>
 
@@ -96,12 +108,13 @@ import { ref } from 'vue'
 const isMobileMenuOpen = ref(false)
 
 const { isCollapsed, toggle } = useSidebar()
+const { isOpen: chatOpen, width: chatWidth, toggle: toggleChat } = useChatPanel()
 
 const links = [
   { label: 'Dashboard', icon: 'i-heroicons-home', to: '/' },
   { label: 'Profile', icon: 'i-heroicons-user', to: '/profile' },
   { label: 'Log', icon: 'i-heroicons-book-open', to: '/log' },
   { label: 'Finances', icon: 'i-heroicons-banknotes', to: '/finances' },
-{ label: 'Knowledge', icon: 'i-heroicons-academic-cap', to: '/knowledge' },
+  { label: 'Knowledge', icon: 'i-heroicons-academic-cap', to: '/knowledge' },
 ]
 </script>
