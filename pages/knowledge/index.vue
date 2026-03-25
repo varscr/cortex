@@ -3,8 +3,17 @@
     <UiPageHeader title="Knowledge" description="Your personal knowledge base.">
       <template #actions>
         <UiButton icon="i-heroicons-arrow-up-tray" @click="navigateTo('/knowledge/import')">Import</UiButton>
+        <UButton v-if="entries.length > 0" icon="i-heroicons-trash" color="red" variant="soft" @click="showDeleteAll = true">Delete All</UButton>
       </template>
     </UiPageHeader>
+
+    <UiConfirmModal
+      v-model="showDeleteAll"
+      title="Delete All Entries"
+      :message="`Are you sure you want to delete all ${total} knowledge entries? This cannot be undone.`"
+      confirm-label="Delete All"
+      @confirm="deleteAll"
+    />
 
     <!-- Filters -->
     <div class="linear-panel rounded-xl p-3 mb-6 flex flex-wrap items-center gap-3">
@@ -128,5 +137,23 @@ const total = computed(() => data.value?.total ?? 0)
 
 function contentPreview(content: string) {
   return content.replace(/\n/g, ' ').trim().slice(0, 120)
+}
+
+const showDeleteAll = ref(false)
+const deleting = ref(false)
+const toast = useToast()
+
+async function deleteAll() {
+  deleting.value = true
+  try {
+    await $fetch('/api/knowledge', { method: 'DELETE' })
+    toast.add({ title: 'All entries deleted', color: 'green' })
+    showDeleteAll.value = false
+    refresh()
+  } catch (e: any) {
+    toast.add({ title: e.data?.statusMessage || 'Failed to delete', color: 'red' })
+  } finally {
+    deleting.value = false
+  }
 }
 </script>
