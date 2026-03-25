@@ -1,6 +1,6 @@
 FROM oven/bun:latest
 
-RUN apt-get update && apt-get install -y tesseract-ocr tesseract-ocr-eng curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 # Install Node.js (required for Claude Code CLI)
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \

@@ -55,8 +55,6 @@
           @input="autoResize"
         />
 
-        <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="handleImageUpload" />
-
         <!-- Bottom bar -->
         <div class="flex flex-wrap items-center gap-4">
           <!-- Mood selector -->
@@ -77,9 +75,6 @@
           </div>
 
           <div class="ml-auto flex items-center gap-4">
-            <!-- OCR -->
-            <UiButton icon="i-heroicons-camera" variant="outline" size="sm" :loading="extracting" @click="fileInput?.click()" />
-
             <!-- Date -->
             <input
               v-model="form.date"
@@ -123,9 +118,7 @@ const form = reactive({
   tags: [] as string[],
 })
 
-const fileInput = ref<HTMLInputElement>()
 const saving = ref(false)
-const extracting = ref(false)
 
 function selectType(key: string) {
   selectedType.value = key as EntryTypeKey
@@ -135,25 +128,6 @@ function autoResize(e: Event) {
   const el = e.target as HTMLTextAreaElement
   el.style.height = 'auto'
   el.style.height = el.scrollHeight + 'px'
-}
-
-async function handleImageUpload(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0]
-  if (!file) return
-  extracting.value = true
-  try {
-    const body = new FormData()
-    body.append('image', file)
-    const { text } = await $fetch<{ text: string }>('/api/log/ocr', { method: 'POST', body })
-    if (text) {
-      form.content = form.content ? form.content + '\n\n' + text : text
-    }
-  } catch (e: any) {
-    toast.add({ title: e.data?.statusMessage || 'OCR failed', color: 'red' })
-  } finally {
-    extracting.value = false
-    fileInput.value!.value = ''
-  }
 }
 
 async function submit() {
