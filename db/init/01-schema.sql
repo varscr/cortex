@@ -7,40 +7,6 @@
 CREATE EXTENSION IF NOT EXISTS vector;
 
 -- ================================
--- PERSONAL FINANCES
--- ================================
-CREATE TABLE IF NOT EXISTS accounts (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    type VARCHAR(50) NOT NULL,
-    currency VARCHAR(10) DEFAULT 'USD',
-    is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS transactions (
-    id SERIAL PRIMARY KEY,
-    account_id INTEGER REFERENCES accounts(id),
-    type VARCHAR(20) NOT NULL,
-    category VARCHAR(50),
-    amount DECIMAL(12,2) NOT NULL,
-    description TEXT,
-    date DATE NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS monthly_summary (
-    id SERIAL PRIMARY KEY,
-    month DATE NOT NULL,
-    total_income DECIMAL(12,2),
-    total_expenses DECIMAL(12,2),
-    total_savings DECIMAL(12,2),
-    notes TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE(month)
-);
-
--- ================================
 -- LOG ENTRIES
 -- ================================
 CREATE TABLE IF NOT EXISTS log_entries (
@@ -187,8 +153,6 @@ CREATE TABLE IF NOT EXISTS profile_skills (
 -- ================================
 -- INDEXES
 -- ================================
-CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date);
-CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions(category);
 CREATE INDEX IF NOT EXISTS idx_log_entries_date ON log_entries(date);
 CREATE INDEX IF NOT EXISTS idx_log_entries_tags ON log_entries USING GIN(tags);
 CREATE INDEX IF NOT EXISTS idx_log_entries_type ON log_entries(entry_type);
