@@ -45,7 +45,7 @@ Auto-imported by Nuxt. Each module has three files in `server/utils/`:
 - `<module>-validate.ts` — returns `{ data?, error? }`, caller throws `createError({ statusCode, statusMessage })`
 - `<module>-transform.ts` — snake_case Row to camelCase API, null arrays to `[]`, NUMERIC to `parseFloat()`
 
-Existing modules: log, kanban, trading, finances, profile, knowledge
+Existing modules: log, kanban, finances, profile, knowledge
 
 ## API Routes
 File-based routing at `server/api/<module>/` using Nuxt conventions:
@@ -94,7 +94,7 @@ Vue 3 Composition API (`ref`, `reactive`, `computed`) — no Pinia, keep state l
 Native HTML + manual validation in submit handler.
 
 ## Modules
-log, finances, trading, kanban, profile, knowledge — each with full CRUD API + types/validate/transform utils.
+log, finances, kanban, profile, knowledge — each with full CRUD API + types/validate/transform utils.
 
 ## Agent System
 LLM-powered agents defined by TOML config files in `agents/` directory.

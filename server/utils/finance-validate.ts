@@ -59,7 +59,7 @@ export function validateMonthlySummaryInput(body: any): { data?: MonthlySummaryI
     return { error: 'Month is required (YYYY-MM-DD, first day of month)' }
   }
 
-  const numericFields = ['totalIncome', 'totalExpenses', 'totalSavings', 'tradingPnl'] as const
+  const numericFields = ['totalIncome', 'totalExpenses', 'totalSavings'] as const
   for (const field of numericFields) {
     if (body[field] !== undefined && body[field] !== null && typeof body[field] !== 'number') {
       return { error: `${field} must be a number` }
@@ -72,7 +72,6 @@ export function validateMonthlySummaryInput(body: any): { data?: MonthlySummaryI
       totalIncome: body.totalIncome ?? null,
       totalExpenses: body.totalExpenses ?? null,
       totalSavings: body.totalSavings ?? null,
-      tradingPnl: body.tradingPnl ?? null,
       notes: body.notes ?? null,
     },
   }

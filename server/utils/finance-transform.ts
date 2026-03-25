@@ -29,7 +29,6 @@ export function toMonthlySummary(row: MonthlySummaryRow): MonthlySummary {
     totalIncome: row.total_income !== null ? parseFloat(row.total_income) : null,
     totalExpenses: row.total_expenses !== null ? parseFloat(row.total_expenses) : null,
     totalSavings: row.total_savings !== null ? parseFloat(row.total_savings) : null,
-    tradingPnl: row.trading_pnl !== null ? parseFloat(row.trading_pnl) : null,
     notes: row.notes,
     createdAt: row.created_at,
   }

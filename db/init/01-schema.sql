@@ -7,67 +7,6 @@
 CREATE EXTENSION IF NOT EXISTS vector;
 
 -- ================================
--- TRADING DATA (BingX copy trading)
--- ================================
-CREATE TABLE IF NOT EXISTS strategies (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    tags TEXT[],
-    allocation_usd DECIMAL(12,2),
-    is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS daily_snapshots (
-    id SERIAL PRIMARY KEY,
-    strategy_id INTEGER REFERENCES strategies(id) ON DELETE SET NULL,
-    date DATE NOT NULL,
-    balance DECIMAL(12,4),
-    equity DECIMAL(12,4),
-    pnl DECIMAL(12,4),
-    roi DECIMAL(8,4),
-    drawdown DECIMAL(8,4),
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE UNIQUE INDEX IF NOT EXISTS uq_snapshots_strategy_date
-  ON daily_snapshots (strategy_id, date)
-  WHERE strategy_id IS NOT NULL;
-CREATE UNIQUE INDEX IF NOT EXISTS uq_snapshots_account_date
-  ON daily_snapshots (date)
-  WHERE strategy_id IS NULL;
-
-CREATE TABLE IF NOT EXISTS trades (
-    id SERIAL PRIMARY KEY,
-    strategy_id INTEGER REFERENCES strategies(id) ON DELETE SET NULL,
-    pair VARCHAR(20) NOT NULL,
-    direction VARCHAR(10) NOT NULL,
-    entry_price DECIMAL(16,8),
-    exit_price DECIMAL(16,8),
-    quantity DECIMAL(16,8),
-    pnl DECIMAL(12,4),
-    fee DECIMAL(12,4),
-    leverage INTEGER DEFAULT 1,
-    margin DECIMAL(16,4),
-    funding_fee DECIMAL(12,4) DEFAULT 0,
-    bingx_position_id VARCHAR(100) UNIQUE,
-    opened_at TIMESTAMPTZ,
-    closed_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS trading_sync_log (
-    id SERIAL PRIMARY KEY,
-    sync_type VARCHAR(50) NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'running',
-    records_synced INTEGER DEFAULT 0,
-    error_message TEXT,
-    started_at TIMESTAMPTZ DEFAULT NOW(),
-    completed_at TIMESTAMPTZ
-);
-
--- ================================
 -- PERSONAL FINANCES
 -- ================================
 CREATE TABLE IF NOT EXISTS accounts (
@@ -96,7 +35,6 @@ CREATE TABLE IF NOT EXISTS monthly_summary (
     total_income DECIMAL(12,2),
     total_expenses DECIMAL(12,2),
     total_savings DECIMAL(12,2),
-    trading_pnl DECIMAL(12,2),
     notes TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(month)
@@ -249,14 +187,6 @@ CREATE TABLE IF NOT EXISTS profile_skills (
 -- ================================
 -- INDEXES
 -- ================================
-CREATE INDEX IF NOT EXISTS idx_snapshots_date ON daily_snapshots(date);
-CREATE INDEX IF NOT EXISTS idx_snapshots_strategy ON daily_snapshots(strategy_id);
-CREATE INDEX IF NOT EXISTS idx_trades_strategy ON trades(strategy_id);
-CREATE INDEX IF NOT EXISTS idx_trades_closed ON trades(closed_at);
-CREATE INDEX IF NOT EXISTS idx_trades_bingx_pos ON trades(bingx_position_id);
-CREATE INDEX IF NOT EXISTS idx_trades_pair ON trades(pair);
-CREATE INDEX IF NOT EXISTS idx_sync_log_type ON trading_sync_log(sync_type);
-CREATE INDEX IF NOT EXISTS idx_sync_log_started ON trading_sync_log(started_at DESC);
 CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date);
 CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions(category);
 CREATE INDEX IF NOT EXISTS idx_log_entries_date ON log_entries(date);

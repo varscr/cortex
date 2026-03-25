@@ -31,8 +31,7 @@ export interface MonthlySummaryRow {
   total_income: string | null
   total_expenses: string | null
   total_savings: string | null
-  trading_pnl: string | null
-  notes: string | null
+notes: string | null
   created_at: string
 }
 
@@ -63,7 +62,6 @@ export interface MonthlySummary {
   totalIncome: number | null
   totalExpenses: number | null
   totalSavings: number | null
-  tradingPnl: number | null
   notes: string | null
   createdAt: string
 }
@@ -90,7 +88,6 @@ export interface MonthlySummaryInput {
   totalIncome?: number | null
   totalExpenses?: number | null
   totalSavings?: number | null
-  tradingPnl?: number | null
   notes?: string | null
 }
 
