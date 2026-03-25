@@ -19,5 +19,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Skill not found' })
   }
 
+  upsertSkillEmbedding(result.rows[0])
+    .catch(err => console.error('[embed] failed for profile/skill', result.rows[0].id, err))
+
   return toSkill(result.rows[0])
 })

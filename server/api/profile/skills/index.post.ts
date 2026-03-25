@@ -13,6 +13,9 @@ export default defineEventHandler(async (event) => {
     [data.name, data.category, data.proficiency, data.level, data.notes],
   )
 
+  upsertSkillEmbedding(result.rows[0])
+    .catch(err => console.error('[embed] failed for profile/skill', result.rows[0].id, err))
+
   setResponseStatus(event, 201)
   return toSkill(result.rows[0])
 })

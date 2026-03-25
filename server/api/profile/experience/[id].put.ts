@@ -19,5 +19,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Experience not found' })
   }
 
+  upsertExperienceEmbedding(result.rows[0])
+    .catch(err => console.error('[embed] failed for profile/experience', result.rows[0].id, err))
+
   return toExperience(result.rows[0])
 })

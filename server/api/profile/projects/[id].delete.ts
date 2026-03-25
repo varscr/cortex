@@ -10,5 +10,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Project not found' })
   }
 
+  deleteProjectEmbedding(parseInt(id!))
+    .catch(err => console.error('[embed] delete failed for profile/project', id, err))
+
   return { deleted: true }
 })

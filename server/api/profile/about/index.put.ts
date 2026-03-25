@@ -15,5 +15,8 @@ export default defineEventHandler(async (event) => {
     [data.headline, data.bio, data.location, data.avatarUrl, data.email, data.jobTitle, data.status, data.cvPdfUrl, data.cvHtml],
   )
 
+  upsertAboutEmbedding(result.rows[0])
+    .catch(err => console.error('[embed] failed for profile/about', err))
+
   return toAbout(result.rows[0])
 })

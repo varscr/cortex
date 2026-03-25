@@ -10,5 +10,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Certification not found' })
   }
 
+  deleteCertificationEmbedding(parseInt(id!))
+    .catch(err => console.error('[embed] delete failed for profile/certification', id, err))
+
   return { deleted: true }
 })

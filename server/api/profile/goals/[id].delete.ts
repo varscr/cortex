@@ -10,5 +10,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Goal not found' })
   }
 
+  deleteGoalEmbedding(parseInt(id!))
+    .catch(err => console.error('[embed] delete failed for profile/goal', id, err))
+
   return { deleted: true }
 })

@@ -10,5 +10,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Education not found' })
   }
 
+  deleteEducationEmbedding(parseInt(id!))
+    .catch(err => console.error('[embed] delete failed for profile/education', id, err))
+
   return { deleted: true }
 })

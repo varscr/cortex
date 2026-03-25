@@ -13,6 +13,9 @@ export default defineEventHandler(async (event) => {
     [data.institution, data.degree, data.fieldOfStudy, data.startDate, data.endDate, data.description, data.isCurrent],
   )
 
+  upsertEducationEmbedding(result.rows[0])
+    .catch(err => console.error('[embed] failed for profile/education', result.rows[0].id, err))
+
   setResponseStatus(event, 201)
   return toEducation(result.rows[0])
 })

@@ -13,6 +13,9 @@ export default defineEventHandler(async (event) => {
     [data.name, data.description, data.url, data.repoUrl, data.techStack, data.imageUrl, data.isFeatured, data.type, data.roleType, data.status, data.highlights, data.client],
   )
 
+  upsertProjectEmbedding(result.rows[0])
+    .catch(err => console.error('[embed] failed for profile/project', result.rows[0].id, err))
+
   setResponseStatus(event, 201)
   return toProject(result.rows[0])
 })

@@ -10,5 +10,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Experience not found' })
   }
 
+  deleteExperienceEmbedding(parseInt(id!))
+    .catch(err => console.error('[embed] delete failed for profile/experience', id, err))
+
   return { deleted: true }
 })

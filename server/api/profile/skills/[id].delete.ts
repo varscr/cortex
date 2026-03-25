@@ -10,5 +10,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Skill not found' })
   }
 
+  deleteSkillEmbedding(parseInt(id!))
+    .catch(err => console.error('[embed] delete failed for profile/skill', id, err))
+
   return { deleted: true }
 })

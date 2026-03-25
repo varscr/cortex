@@ -13,6 +13,9 @@ export default defineEventHandler(async (event) => {
     [data.title, data.description, data.status, data.targetDate, data.category],
   )
 
+  upsertGoalEmbedding(result.rows[0])
+    .catch(err => console.error('[embed] failed for profile/goal', result.rows[0].id, err))
+
   setResponseStatus(event, 201)
   return toGoal(result.rows[0])
 })

@@ -19,5 +19,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Project not found' })
   }
 
+  upsertProjectEmbedding(result.rows[0])
+    .catch(err => console.error('[embed] failed for profile/project', result.rows[0].id, err))
+
   return toProject(result.rows[0])
 })

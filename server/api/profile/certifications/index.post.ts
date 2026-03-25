@@ -13,6 +13,9 @@ export default defineEventHandler(async (event) => {
     [data.name, data.institution, data.platform, data.date, data.url],
   )
 
+  upsertCertificationEmbedding(result.rows[0])
+    .catch(err => console.error('[embed] failed for profile/certification', result.rows[0].id, err))
+
   setResponseStatus(event, 201)
   return toCertification(result.rows[0])
 })

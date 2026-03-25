@@ -19,5 +19,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Goal not found' })
   }
 
+  upsertGoalEmbedding(result.rows[0])
+    .catch(err => console.error('[embed] failed for profile/goal', result.rows[0].id, err))
+
   return toGoal(result.rows[0])
 })

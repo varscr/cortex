@@ -13,6 +13,9 @@ export default defineEventHandler(async (event) => {
     [data.company, data.role, data.startDate, data.endDate, data.description, data.isCurrent, data.location, data.employmentType, data.techStack, data.highlights, data.reasonForLeaving],
   )
 
+  upsertExperienceEmbedding(result.rows[0])
+    .catch(err => console.error('[embed] failed for profile/experience', result.rows[0].id, err))
+
   setResponseStatus(event, 201)
   return toExperience(result.rows[0])
 })

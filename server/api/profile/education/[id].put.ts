@@ -19,5 +19,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Education not found' })
   }
 
+  upsertEducationEmbedding(result.rows[0])
+    .catch(err => console.error('[embed] failed for profile/education', result.rows[0].id, err))
+
   return toEducation(result.rows[0])
 })

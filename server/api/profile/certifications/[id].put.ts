@@ -19,5 +19,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Certification not found' })
   }
 
+  upsertCertificationEmbedding(result.rows[0])
+    .catch(err => console.error('[embed] failed for profile/certification', result.rows[0].id, err))
+
   return toCertification(result.rows[0])
 })
