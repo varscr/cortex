@@ -5,9 +5,21 @@ import type { AgentConfig } from './llm-types'
 
 const AGENTS_DIR = join(process.cwd(), 'agents')
 
-export async function loadAgentConfig(name: string): Promise<AgentConfig> {
+function substituteVariables(content: string, vars: Record<string, string>): string {
+  return content.replace(/\$\{(\w+)\}/g, (_, key) => vars[key] ?? '')
+}
+
+export async function loadAgentConfig(
+  name: string,
+  variables?: Record<string, string>
+): Promise<AgentConfig> {
   const filePath = join(AGENTS_DIR, `${name}.toml`)
-  const content = await readFile(filePath, 'utf-8')
+  let content = await readFile(filePath, 'utf-8')
+
+  if (variables) {
+    content = substituteVariables(content, variables)
+  }
+
   const config = parse(content) as unknown as AgentConfig
   return config
 }

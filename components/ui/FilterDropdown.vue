@@ -1,17 +1,26 @@
 <template>
   <div class="relative" ref="containerRef">
     <button
-      :class="['bg-white/5 text-sm text-zinc-400 rounded-lg px-3 py-1.5 border border-white/5 hover:border-white/10 transition-colors flex items-center justify-between', width]"
+      :class="[
+        'rounded-lg border transition-all duration-200 flex items-center gap-2',
+        buttonClass,
+        open ? 'border-white/20' : 'border-white/5 hover:border-white/10'
+      ]"
       @click="open = !open"
     >
-      <span :class="modelValue ? 'text-zinc-300' : ''">{{ selectedLabel }}</span>
-      <UIcon name="i-heroicons-chevron-down" class="w-3.5 h-3.5" />
+      <UIcon v-if="icon" :name="icon" class="w-3.5 h-3.5 flex-shrink-0" />
+      <span :class="textClass">{{ selectedLabel }}</span>
+      <UIcon name="i-heroicons-chevron-down" class="w-3.5 h-3.5 flex-shrink-0" />
     </button>
-    <div v-if="open" class="absolute top-full left-0 mt-1 w-44 bg-zinc-900 border border-white/10 rounded-lg shadow-xl z-50 py-1 overflow-hidden">
+    <div 
+      v-if="open" 
+      class="absolute top-full left-0 mt-1 bg-zinc-900 border border-white/10 rounded-lg shadow-xl z-50 py-1 overflow-hidden min-w-full"
+      :class="menuClass"
+    >
       <button
         v-for="opt in options"
         :key="opt.value"
-        class="w-full text-left px-3 py-1.5 text-sm transition-colors"
+        class="w-full text-left px-3 py-1.5 text-sm transition-colors flex items-center gap-2"
         :class="modelValue === opt.value ? 'text-white bg-white/10' : 'text-zinc-400 hover:text-zinc-200 hover:bg-white/5'"
         @click="select(opt.value)"
       >
@@ -34,9 +43,18 @@ const props = withDefaults(defineProps<{
   options: Option[]
   placeholder?: string
   width?: string
+  icon?: string
+  iconClass?: string
+  buttonClass?: string
+  textClass?: string
+  menuClass?: string
 }>(), {
   placeholder: 'Select...',
-  width: 'w-40',
+  width: 'w-32',
+  iconClass: 'text-zinc-500',
+  buttonClass: 'bg-white/5 text-zinc-400 text-xs px-3 py-1.5',
+  textClass: 'flex-1 text-left truncate',
+  menuClass: 'w-44',
 })
 
 const emit = defineEmits<{

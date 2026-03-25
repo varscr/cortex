@@ -10,6 +10,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
 # Install Claude Code CLI globally via npm
 RUN npm install -g @anthropic-ai/claude-code
 
+# Install OpenCode CLI globally via npm
+RUN npm install -g opencode-ai
+
 WORKDIR /app
 
 # Install dependencies first (cache layer)

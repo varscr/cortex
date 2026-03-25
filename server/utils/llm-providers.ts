@@ -22,6 +22,18 @@ export const LLM_PROVIDERS: LlmProviderOption[] = [
     ],
     defaultModel: 'claude-sonnet-4-6',
   },
+  {
+    id: 'opencode',
+    name: 'OpenCode',
+    models: [
+      { id: 'big-pickle',           name: 'Big Pickle',         description: 'Free - Stealth model' },
+      { id: 'minimax-m2.1-free',    name: 'MiniMax M2.1 Free', description: 'Free' },
+      { id: 'glm-4.7-free',         name: 'GLM 4.7 Free',      description: 'Free' },
+      { id: 'kimi-k2.5-free',       name: 'Kimi K2.5 Free',    description: 'Free' },
+      { id: 'gpt-5-nano',           name: 'GPT 5 Nano',         description: 'Free' },
+    ],
+    defaultModel: 'big-pickle',
+  },
 ]
 
 export const DEFAULT_PROVIDER = 'claude-code'

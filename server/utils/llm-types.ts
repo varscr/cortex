@@ -4,6 +4,7 @@ export interface CompletionRequest {
   maxTokens?: number
   temperature?: number
   model?: string
+  metadata?: Record<string, any>
 }
 
 export interface CompletionResponse {

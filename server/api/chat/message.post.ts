@@ -1,3 +1,8 @@
+import { buildSystemPrompt } from '../../utils/chat-context'
+import { loadAgentConfig } from '../../utils/agent-loader'
+import { createDriver } from '../../utils/llm-driver-factory'
+import { buildChatContext } from '../../utils/chat-rag'
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { data, error } = validateMessageInput(body)
@@ -43,8 +48,11 @@ export default defineEventHandler(async (event) => {
     .reverse()
     .map((r: { role: string; content: string }) => ({ role: r.role as 'user' | 'assistant', content: r.content }))
 
-  // 5. Load agent config and build system prompt
-  const config = await loadAgentConfig('chat')
+  // 5. Load agent config with provider/model variables
+  const config = await loadAgentConfig('chat', {
+    PROVIDER: session.model_provider,
+    MODEL: session.model_name,
+  })
   const systemPrompt = buildSystemPrompt(config.model.system_prompt, contextText)
 
   // 6. Call LLM

@@ -83,10 +83,16 @@ validate → `db.query()` → transform → return
 ### State
 Vue 3 Composition API (`ref`, `reactive`, `computed`) — no Pinia, keep state local or in composables.
 
+### UI Components
+Before making frontend changes, always check `components/ui/` for reusable components:
+- `Button`, `Card`, `PageHeader` — common UI elements
+- `FilterDropdown` — styled dropdown menus
+
+If a suitable component exists, use and extend it. If not, create new reusable components in `components/ui/` rather than one-off implementations.
+
 ### UI
 - `useToast()` — green success, red errors
 - Icons: Heroicons via `i-heroicons-*`
-- Reusable components in `components/ui/` (Button, Card, PageHeader) — use and extend these
 - Custom classes: `.linear-bg`, `.linear-panel`, `.linear-hover`
 - Sidebar via `useSidebar()` composable, links array in `layouts/default.vue`
 
@@ -94,23 +100,42 @@ Vue 3 Composition API (`ref`, `reactive`, `computed`) — no Pinia, keep state l
 Native HTML + manual validation in submit handler.
 
 ## Modules
-log, kanban, profile, knowledge — each with full CRUD API + types/validate/transform utils.
+log, kanban, profile, knowledge, chat — each with full CRUD API + types/validate/transform utils.
 
-## Agent System
-LLM-powered agents defined by TOML config files in `agents/` directory.
+## Chat System
+Multi-provider AI chat interface with RAG-powered context. See `docs/chat/README.md` for full documentation.
+
+### Providers
+- **Claude CLI** (`llm-driver-claude-cli.ts`) — Uses `claude` command, Claude models
+- **OpenCode** (`llm-driver-opencode.ts`) — Uses `opencode run`, free Zen models
 
 ### Architecture
 - `server/utils/llm-types.ts` — LLM driver interfaces, agent config/run types
 - `server/utils/llm-driver-claude-cli.ts` — Claude Code CLI subprocess driver
+- `server/utils/llm-driver-opencode.ts` — OpenCode CLI subprocess driver
 - `server/utils/llm-driver-factory.ts` — provider → driver factory
-- `server/utils/agent-loader.ts` — reads TOML configs from `agents/`
-- `server/utils/agent-runner.ts` — `runAgent(name, input)` → `CompletionResponse`
+- `server/utils/llm-providers.ts` — available providers and models
+- `server/utils/agent-loader.ts` — reads TOML configs from `agents/` with variable substitution
+
+### Variable Substitution
+Agent configs support `${VARIABLE}` syntax for runtime substitution:
+```toml
+[model]
+provider = "${PROVIDER}"
+model = "${MODEL}"
+```
+
+## Agent System
+LLM-powered agents defined by TOML config files in `agents/` directory.
 
 ### Adding a new agent
 Create a `.toml` file in `agents/` with `name`, `description`, and `[model]` section. No code changes needed.
 
 ### Adding a new LLM provider
-Create `llm-driver-{name}.ts` implementing `LlmDriver`, add a `case` in `llm-driver-factory.ts`.
+1. Create `llm-driver-{name}.ts` implementing `LlmDriver`
+2. Add case to `llm-driver-factory.ts`
+3. Add provider + models to `llm-providers.ts`
+See `docs/chat/adding-a-provider.md` for full guide.
 
 ### Knowledge Ingest
 - `POST /api/agents/ingest` — accepts Claude.ai export JSON, returns `{ runId }` (202)

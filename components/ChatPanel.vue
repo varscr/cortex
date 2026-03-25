@@ -13,25 +13,47 @@
     <!-- Header -->
     <div class="h-16 flex items-center gap-2 px-4 border-b border-white/5 flex-shrink-0">
       <div class="flex-1 min-w-0">
-        <p class="text-sm font-medium text-zinc-300 truncate">
+        <p class="text-base font-medium text-zinc-200 truncate">
           {{ view === 'history' ? 'Conversations' : (sessionDetail?.title ?? 'New Chat') }}
         </p>
-        <div class="flex items-center gap-1 mt-0.5">
-          <UIcon name="i-heroicons-cpu-chip" class="w-3 h-3 text-zinc-600" />
-          <select
-            v-model="activeModel"
-            :disabled="!!activeSessionId"
-            class="bg-transparent text-xs text-zinc-500 focus:outline-none cursor-pointer disabled:cursor-default appearance-none"
-            :title="activeSessionId ? 'Model locked for this session' : 'Model for next chat'"
+        <div class="flex items-center gap-1.5 mt-1">
+          <UiFilterDropdown
+            v-model="selectedProvider"
+            :options="providerOptions"
+            placeholder="Provider"
+            icon="i-heroicons-globe-alt"
+            icon-class="text-zinc-600"
+            button-class="bg-transparent text-zinc-500 hover:text-zinc-300 text-xs px-2 py-1 border-0 hover:bg-white/5"
+            text-class="truncate"
+            menu-class="w-36"
+          />
+          <UiFilterDropdown
+            v-model="selectedModel"
+            :options="modelOptions"
+            placeholder="Model"
+            icon="i-heroicons-cpu-chip"
+            icon-class="text-zinc-600"
+            button-class="bg-transparent text-zinc-500 hover:text-zinc-300 text-xs px-2 py-1 border-0 hover:bg-white/5"
+            text-class="truncate"
+            menu-class="w-44"
+          />
+        </div>
+
+        <!-- Switch confirmation -->
+        <div v-if="pendingSwitch" class="flex items-center gap-2 mt-1.5">
+          <span class="text-xs text-amber-400">Switch provider?</span>
+          <button
+            class="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 transition-colors"
+            @click="confirmSwitch"
           >
-            <option
-              v-for="m in currentModels"
-              :key="m.id"
-              :value="m.id"
-              class="bg-zinc-900 text-zinc-300"
-            >{{ providerName }} · {{ m.name }}</option>
-          </select>
-          <UIcon v-if="!activeSessionId" name="i-heroicons-chevron-down" class="w-3 h-3 text-zinc-600 pointer-events-none" />
+            Yes
+          </button>
+          <button
+            class="text-xs px-2 py-0.5 rounded bg-zinc-700 text-zinc-400 hover:bg-zinc-600 transition-colors"
+            @click="cancelSwitch"
+          >
+            No
+          </button>
         </div>
       </div>
 
@@ -191,6 +213,7 @@
 
 <script setup lang="ts">
 const SESSION_KEY = 'cortex_chat_session_id'
+const PROVIDER_KEY = 'cortex_chat_provider'
 const MODEL_KEY = 'cortex_chat_model'
 
 const { isOpen, width, toggle, initWidth, saveWidth } = useChatPanel()
@@ -199,12 +222,12 @@ const { isOpen, width, toggle, initWidth, saveWidth } = useChatPanel()
 
 const view = ref<'chat' | 'history'>('chat')
 const activeSessionId = ref<number | null>(null)
-const pendingModel = ref('claude-sonnet-4-6')
 const inputText = ref('')
 const sending = ref(false)
 const expandedSources = ref(new Set<number>())
 const messagesEl = ref<HTMLElement | null>(null)
 const inputEl = ref<HTMLTextAreaElement | null>(null)
+const pendingSwitch = ref<{ provider: string; model: string } | null>(null)
 
 const toast = useToast()
 
@@ -212,19 +235,107 @@ const toast = useToast()
 
 const { data: providers } = useFetch<LlmProviderOption[]>('/api/chat/providers')
 
-const currentModels = computed(() =>
-  providers.value?.find(p => p.id === 'claude-code')?.models ?? []
-)
-const providerName = computed(() =>
-  providers.value?.find(p => p.id === (sessionDetail.value?.modelProvider ?? 'claude-code'))?.name ?? 'Claude CLI'
+const selectedProvider = ref('claude-code')
+const selectedModel = ref('claude-sonnet-4-6')
+
+const currentModels = computed(() => {
+  const provider = providers.value?.find(p => p.id === selectedProvider.value)
+  return provider?.models ?? []
+})
+
+const providerOptions = computed(() =>
+  providers.value?.map(p => ({ label: p.name, value: p.id })) ?? []
 )
 
-const activeModel = computed({
-  get: () => sessionDetail.value?.modelName ?? pendingModel.value,
-  set: (v: string) => {
-    pendingModel.value = v
-    localStorage.setItem(MODEL_KEY, v)
-  },
+const modelOptions = computed(() => {
+  const provider = providers.value?.find(p => p.id === selectedProvider.value)
+  return provider?.models.map(m => ({ label: m.name, value: m.id })) ?? []
+})
+
+watch(selectedProvider, (newProvider) => {
+  const provider = providers.value?.find(p => p.id === newProvider)
+  if (provider?.models.length) {
+    selectedModel.value = provider.defaultModel || provider.models[0].id
+    localStorage.setItem(PROVIDER_KEY, newProvider)
+    localStorage.setItem(MODEL_KEY, selectedModel.value)
+  }
+})
+
+watch(selectedModel, (newModel) => {
+  localStorage.setItem(MODEL_KEY, newModel)
+})
+
+// ── Switch provider/model with confirmation ───────────────────────────────────
+
+watch([selectedProvider, selectedModel], ([newProvider, newModel]) => {
+  if (!activeSessionId.value || !sessionDetail.value) return
+
+  const session = sessionDetail.value
+  if (newProvider === session.modelProvider && newModel === session.modelName) return
+
+  pendingSwitch.value = { provider: newProvider, model: newModel }
+})
+
+function confirmSwitch() {
+  if (!pendingSwitch.value) return
+  switchProvider(pendingSwitch.value.provider, pendingSwitch.value.model)
+  pendingSwitch.value = null
+}
+
+function cancelSwitch() {
+  if (!activeSessionId.value || !sessionDetail.value) {
+    pendingSwitch.value = null
+    return
+  }
+  const session = sessionDetail.value
+  selectedProvider.value = session.modelProvider
+  selectedModel.value = session.modelName
+  pendingSwitch.value = null
+}
+
+async function switchProvider(newProvider: string, newModel: string) {
+  if (!activeSessionId.value) return
+
+  sending.value = true
+  const currentContent = inputText.value.trim()
+
+  try {
+    const result = await $fetch<{ session: ChatSession; message?: ChatMessage }>('/api/chat/switch', {
+      method: 'POST',
+      body: {
+        sessionId: activeSessionId.value,
+        newProvider,
+        newModel,
+        pendingMessage: currentContent,
+      },
+    })
+
+    localStorage.setItem(PROVIDER_KEY, newProvider)
+    localStorage.setItem(MODEL_KEY, newModel)
+    inputText.value = ''
+
+    await refreshSession()
+    if (result.message) {
+      nextTick(() => scrollToBottom())
+    }
+
+    toast.add({ title: `Switched to ${newProvider}`, color: 'green' })
+  } catch {
+    toast.add({ title: 'Failed to switch provider', color: 'red' })
+  } finally {
+    sending.value = false
+  }
+}
+
+const activeModelDisplay = computed(() => {
+  if (activeSessionId.value && sessionDetail.value) {
+    const provider = providers.value?.find(p => p.id === sessionDetail.value.modelProvider)
+    const model = provider?.models.find(m => m.id === sessionDetail.value.modelName)
+    return model?.name ?? sessionDetail.value.modelName
+  }
+  const provider = providers.value?.find(p => p.id === selectedProvider.value)
+  const model = provider?.models.find(m => m.id === selectedModel.value)
+  return model?.name ?? selectedModel.value
 })
 
 // ── Session detail ─────────────────────────────────────────────────────────────
@@ -250,8 +361,11 @@ onMounted(() => {
   const storedId = localStorage.getItem(SESSION_KEY)
   if (storedId) activeSessionId.value = parseInt(storedId)
 
+  const storedProvider = localStorage.getItem(PROVIDER_KEY)
+  if (storedProvider) selectedProvider.value = storedProvider
+
   const storedModel = localStorage.getItem(MODEL_KEY)
-  if (storedModel) pendingModel.value = storedModel
+  if (storedModel) selectedModel.value = storedModel
 })
 
 // ── Resize ────────────────────────────────────────────────────────────────────
@@ -293,7 +407,7 @@ function toggleView() {
 async function newChat() {
   const session = await $fetch<ChatSession>('/api/chat/sessions', {
     method: 'POST',
-    body: { provider: 'claude-code', model: pendingModel.value },
+    body: { provider: selectedProvider.value, model: selectedModel.value },
   })
   activeSessionId.value = session.id
   localStorage.setItem(SESSION_KEY, String(session.id))
@@ -358,10 +472,9 @@ function toggleSources(msgId: number) {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function modelShortLabel(providerId: string, modelId: string): string {
-  return providers.value
-    ?.find(p => p.id === providerId)
-    ?.models.find(m => m.id === modelId)
-    ?.name ?? modelId
+  const provider = providers.value?.find(p => p.id === providerId)
+  const model = provider?.models.find(m => m.id === modelId)
+  return model?.name ?? (modelId.includes('/') ? modelId.split('/')[1] : modelId)
 }
 
 function formatDate(iso: string): string {

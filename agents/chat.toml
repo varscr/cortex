@@ -2,8 +2,8 @@ name = "chat"
 description = "Personal AI assistant with RAG across all Cortex modules"
 
 [model]
-provider = "claude-code"
-model = "claude-sonnet-4-6"
+provider = "${PROVIDER}"
+model = "${MODEL}"
 max_tokens = 4096
 temperature = 0.3
 system_prompt = """
