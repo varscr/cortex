@@ -1,5 +1,8 @@
-export const SKILL_CATEGORIES = ['Frontend', 'Backend', 'DevOps', 'Language', 'Database', 'Tool'] as const
+export const SKILL_CATEGORIES = ['Frontend', 'Backend', 'DevOps', 'Language', 'Database', 'Tool', 'AI/ML', 'Auth', 'Soft Skills'] as const
 export type SkillCategory = typeof SKILL_CATEGORIES[number]
+
+export const SKILL_LEVELS = ['Advanced', 'Intermediate', 'Learning', 'Exposure', 'Basic'] as const
+export type SkillLevel = typeof SKILL_LEVELS[number]
 
 // Database row types (snake_case)
 export interface SkillRow {
@@ -7,6 +10,8 @@ export interface SkillRow {
   name: string
   category: string
   proficiency: number
+  level: string | null
+  notes: string | null
   created_at: string
   updated_at: string
 }
@@ -19,6 +24,11 @@ export interface ExperienceRow {
   end_date: string | null
   description: string | null
   is_current: boolean
+  location: string | null
+  employment_type: string | null
+  tech_stack: string[] | null
+  highlights: string[] | null
+  reason_for_leaving: string | null
   created_at: string
   updated_at: string
 }
@@ -32,6 +42,11 @@ export interface ProjectRow {
   tech_stack: string[] | null
   image_url: string | null
   is_featured: boolean
+  type: string | null
+  role_type: string | null
+  status: string | null
+  highlights: string[] | null
+  client: string | null
   created_at: string
   updated_at: string
 }
@@ -42,6 +57,8 @@ export interface Skill {
   name: string
   category: string
   proficiency: number
+  level: string | null
+  notes: string | null
   createdAt: string
   updatedAt: string
 }
@@ -54,6 +71,11 @@ export interface Experience {
   endDate: string | null
   description: string | null
   isCurrent: boolean
+  location: string | null
+  employmentType: string | null
+  techStack: string[]
+  highlights: string[]
+  reasonForLeaving: string | null
   createdAt: string
   updatedAt: string
 }
@@ -67,6 +89,11 @@ export interface Project {
   techStack: string[]
   imageUrl: string | null
   isFeatured: boolean
+  type: string | null
+  roleType: string | null
+  status: string | null
+  highlights: string[]
+  client: string | null
   createdAt: string
   updatedAt: string
 }
@@ -75,7 +102,9 @@ export interface Project {
 export interface SkillInput {
   name: string
   category: string
-  proficiency: number
+  proficiency: number | null
+  level: string | null
+  notes: string | null
 }
 
 export interface ExperienceInput {
@@ -85,6 +114,11 @@ export interface ExperienceInput {
   endDate: string | null
   description: string | null
   isCurrent: boolean
+  location: string | null
+  employmentType: string | null
+  techStack: string[]
+  highlights: string[]
+  reasonForLeaving: string | null
 }
 
 export interface ProjectInput {
@@ -95,6 +129,11 @@ export interface ProjectInput {
   techStack: string[]
   imageUrl: string | null
   isFeatured: boolean
+  type: string | null
+  roleType: string | null
+  status: string | null
+  highlights: string[]
+  client: string | null
 }
 
 // --- About ---
@@ -105,6 +144,11 @@ export interface AboutRow {
   bio: string | null
   location: string | null
   avatar_url: string | null
+  email: string | null
+  job_title: string | null
+  status: string | null
+  cv_pdf_url: string | null
+  cv_html: string | null
   created_at: string
   updated_at: string
 }
@@ -115,6 +159,11 @@ export interface About {
   bio: string | null
   location: string | null
   avatarUrl: string | null
+  email: string | null
+  jobTitle: string | null
+  status: string | null
+  cvPdfUrl: string | null
+  cvHtml: string | null
   createdAt: string
   updatedAt: string
 }
@@ -124,6 +173,11 @@ export interface AboutInput {
   bio: string | null
   location: string | null
   avatarUrl: string | null
+  email: string | null
+  jobTitle: string | null
+  status: string | null
+  cvPdfUrl: string | null
+  cvHtml: string | null
 }
 
 // --- Education ---
@@ -226,4 +280,65 @@ export interface GoalInput {
   status: string
   targetDate: string | null
   category: string | null
+}
+
+// --- Certifications ---
+
+export interface CertificationRow {
+  id: number
+  name: string
+  institution: string
+  platform: string | null
+  date: string | null
+  url: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface Certification {
+  id: number
+  name: string
+  institution: string
+  platform: string | null
+  date: string | null
+  url: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CertificationInput {
+  name: string
+  institution: string
+  platform: string | null
+  date: string | null
+  url: string | null
+}
+
+// --- References ---
+
+export interface ReferenceRow {
+  id: number
+  name: string
+  title: string | null
+  contact: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface Reference {
+  id: number
+  name: string
+  title: string | null
+  contact: string | null
+  notes: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ReferenceInput {
+  name: string
+  title: string | null
+  contact: string | null
+  notes: string | null
 }

@@ -1,5 +1,5 @@
-import type { SkillInput, ExperienceInput, ProjectInput, AboutInput, EducationInput, LinkInput, GoalInput } from './profile-types'
-import { SKILL_CATEGORIES, GOAL_STATUSES } from './profile-types'
+import type { SkillInput, ExperienceInput, ProjectInput, AboutInput, EducationInput, LinkInput, GoalInput, CertificationInput, ReferenceInput } from './profile-types'
+import { SKILL_CATEGORIES, SKILL_LEVELS, GOAL_STATUSES } from './profile-types'
 
 export function validateSkillInput(body: any): { data?: SkillInput; error?: string } {
   if (!body.name || typeof body.name !== 'string' || !body.name.trim()) {
@@ -10,9 +10,14 @@ export function validateSkillInput(body: any): { data?: SkillInput; error?: stri
     return { error: `Category must be one of: ${SKILL_CATEGORIES.join(', ')}` }
   }
 
-  const proficiency = body.proficiency ?? 3
-  if (typeof proficiency !== 'number' || proficiency < 1 || proficiency > 5) {
+  const proficiency = body.proficiency ?? null
+  if (proficiency !== null && (typeof proficiency !== 'number' || proficiency < 1 || proficiency > 5)) {
     return { error: 'Proficiency must be between 1 and 5' }
+  }
+
+  const level = body.level ?? null
+  if (level !== null && !SKILL_LEVELS.includes(level)) {
+    return { error: `Level must be one of: ${SKILL_LEVELS.join(', ')}` }
   }
 
   return {
@@ -20,6 +25,8 @@ export function validateSkillInput(body: any): { data?: SkillInput; error?: stri
       name: body.name.trim(),
       category: body.category,
       proficiency,
+      level,
+      notes: body.notes ?? null,
     }
   }
 }
@@ -37,6 +44,14 @@ export function validateExperienceInput(body: any): { data?: ExperienceInput; er
     return { error: 'Start date is required' }
   }
 
+  if (body.techStack && !Array.isArray(body.techStack)) {
+    return { error: 'Tech stack must be an array' }
+  }
+
+  if (body.highlights && !Array.isArray(body.highlights)) {
+    return { error: 'Highlights must be an array' }
+  }
+
   return {
     data: {
       company: body.company.trim(),
@@ -45,6 +60,11 @@ export function validateExperienceInput(body: any): { data?: ExperienceInput; er
       endDate: body.endDate ?? null,
       description: body.description ?? null,
       isCurrent: body.isCurrent ?? false,
+      location: body.location ?? null,
+      employmentType: body.employmentType ?? null,
+      techStack: body.techStack ?? [],
+      highlights: body.highlights ?? [],
+      reasonForLeaving: body.reasonForLeaving ?? null,
     }
   }
 }
@@ -58,6 +78,10 @@ export function validateProjectInput(body: any): { data?: ProjectInput; error?: 
     return { error: 'Tech stack must be an array' }
   }
 
+  if (body.highlights && !Array.isArray(body.highlights)) {
+    return { error: 'Highlights must be an array' }
+  }
+
   return {
     data: {
       name: body.name.trim(),
@@ -67,6 +91,11 @@ export function validateProjectInput(body: any): { data?: ProjectInput; error?: 
       techStack: body.techStack ?? [],
       imageUrl: body.imageUrl ?? null,
       isFeatured: body.isFeatured ?? false,
+      type: body.type ?? null,
+      roleType: body.roleType ?? null,
+      status: body.status ?? null,
+      highlights: body.highlights ?? [],
+      client: body.client ?? null,
     }
   }
 }
@@ -78,6 +107,11 @@ export function validateAboutInput(body: any): { data?: AboutInput; error?: stri
       bio: body.bio ?? null,
       location: body.location ?? null,
       avatarUrl: body.avatarUrl ?? null,
+      email: body.email ?? null,
+      jobTitle: body.jobTitle ?? null,
+      status: body.status ?? null,
+      cvPdfUrl: body.cvPdfUrl ?? null,
+      cvHtml: body.cvHtml ?? null,
     }
   }
 }
@@ -144,6 +178,41 @@ export function validateGoalInput(body: any): { data?: GoalInput; error?: string
       status,
       targetDate: body.targetDate ?? null,
       category: body.category ?? null,
+    }
+  }
+}
+
+export function validateCertificationInput(body: any): { data?: CertificationInput; error?: string } {
+  if (!body.name || typeof body.name !== 'string' || !body.name.trim()) {
+    return { error: 'Certification name is required' }
+  }
+
+  if (!body.institution || typeof body.institution !== 'string' || !body.institution.trim()) {
+    return { error: 'Institution is required' }
+  }
+
+  return {
+    data: {
+      name: body.name.trim(),
+      institution: body.institution.trim(),
+      platform: body.platform ?? null,
+      date: body.date ?? null,
+      url: body.url ?? null,
+    }
+  }
+}
+
+export function validateReferenceInput(body: any): { data?: ReferenceInput; error?: string } {
+  if (!body.name || typeof body.name !== 'string' || !body.name.trim()) {
+    return { error: 'Name is required' }
+  }
+
+  return {
+    data: {
+      name: body.name.trim(),
+      title: body.title ?? null,
+      contact: body.contact ?? null,
+      notes: body.notes ?? null,
     }
   }
 }

@@ -12,11 +12,20 @@
       >
         <div class="flex items-start justify-between">
           <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <h4 class="text-sm font-medium text-white">{{ project.name }}</h4>
               <span v-if="project.isFeatured" class="px-1.5 py-0.5 text-[10px] font-medium rounded bg-amber-500/10 text-amber-400">Featured</span>
+              <span v-if="project.type" class="px-1.5 py-0.5 text-[10px] font-medium rounded bg-zinc-700 text-zinc-400 capitalize">{{ project.type }}</span>
+              <span v-if="project.roleType" class="px-1.5 py-0.5 text-[10px] font-medium rounded bg-zinc-700 text-zinc-400">{{ project.roleType }}</span>
+              <span v-if="project.status" class="px-1.5 py-0.5 text-[10px] font-medium rounded" :class="statusClass(project.status)">{{ project.status }}</span>
             </div>
+            <p v-if="project.client" class="text-xs text-zinc-500 mt-0.5">Client: {{ project.client }}</p>
             <p v-if="project.description" class="text-sm text-zinc-400 mt-1">{{ project.description }}</p>
+            <ul v-if="project.highlights.length" class="mt-2 space-y-1">
+              <li v-for="h in project.highlights" :key="h" class="text-sm text-zinc-400 flex gap-2">
+                <span class="text-zinc-600 flex-shrink-0">–</span>{{ h }}
+              </li>
+            </ul>
             <div v-if="project.techStack.length" class="flex flex-wrap gap-1 mt-2">
               <span
                 v-for="tech in project.techStack"
@@ -49,12 +58,52 @@
       placeholder="Project name"
       class="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none focus:border-white/20 transition-colors"
     />
+    <div class="grid grid-cols-3 gap-3">
+      <select
+        v-model="form.type"
+        class="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-white/20 transition-colors"
+      >
+        <option value="">Type</option>
+        <option>professional</option>
+        <option>freelance</option>
+        <option>personal</option>
+        <option>academic</option>
+      </select>
+      <select
+        v-model="form.roleType"
+        class="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-white/20 transition-colors"
+      >
+        <option value="">Role type</option>
+        <option>sole-developer</option>
+        <option>contributor</option>
+      </select>
+      <select
+        v-model="form.status"
+        class="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-white/20 transition-colors"
+      >
+        <option value="">Status</option>
+        <option>active</option>
+        <option>completed</option>
+        <option>planned</option>
+      </select>
+    </div>
+    <input
+      v-model="form.client"
+      placeholder="Client (optional)"
+      class="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none focus:border-white/20 transition-colors"
+    />
     <textarea
       v-model="form.description"
       placeholder="Description (optional)"
       rows="3"
       class="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none focus:border-white/20 transition-colors resize-none"
     />
+    <div>
+      <label class="text-xs text-zinc-400 block mb-1">Highlights</label>
+      <div class="border border-white/10 rounded-lg px-3 py-2">
+        <UiTagInput v-model="form.highlights" placeholder="Add bullet point..." :lowercase="false" />
+      </div>
+    </div>
     <input
       v-model="form.url"
       placeholder="Live URL (optional)"
@@ -91,13 +140,39 @@ const toast = useToast()
 const modalOpen = ref(false)
 const saving = ref(false)
 const editing = ref<Project | null>(null)
-const form = reactive({ name: '', description: '', url: '', repoUrl: '', techStack: [] as string[], isFeatured: false })
+const form = reactive({
+  name: '',
+  type: '',
+  roleType: '',
+  status: '',
+  client: '',
+  description: '',
+  highlights: [] as string[],
+  url: '',
+  repoUrl: '',
+  techStack: [] as string[],
+  isFeatured: false,
+})
+
+function statusClass(status: string) {
+  const map: Record<string, string> = {
+    active: 'bg-green-500/10 text-green-400',
+    completed: 'bg-zinc-700 text-zinc-400',
+    planned: 'bg-blue-500/10 text-blue-400',
+  }
+  return map[status] ?? 'bg-zinc-700 text-zinc-400'
+}
 
 function openModal(project?: Project) {
   if (project) {
     editing.value = project
     form.name = project.name
+    form.type = project.type ?? ''
+    form.roleType = project.roleType ?? ''
+    form.status = project.status ?? ''
+    form.client = project.client ?? ''
     form.description = project.description ?? ''
+    form.highlights = [...project.highlights]
     form.url = project.url ?? ''
     form.repoUrl = project.repoUrl ?? ''
     form.techStack = [...project.techStack]
@@ -105,7 +180,12 @@ function openModal(project?: Project) {
   } else {
     editing.value = null
     form.name = ''
+    form.type = ''
+    form.roleType = ''
+    form.status = ''
+    form.client = ''
     form.description = ''
+    form.highlights = []
     form.url = ''
     form.repoUrl = ''
     form.techStack = []
@@ -118,10 +198,17 @@ async function save() {
   saving.value = true
   try {
     const body = {
-      ...form,
+      name: form.name,
+      type: form.type || null,
+      roleType: form.roleType || null,
+      status: form.status || null,
+      client: form.client || null,
       description: form.description || null,
+      highlights: form.highlights,
       url: form.url || null,
       repoUrl: form.repoUrl || null,
+      techStack: form.techStack,
+      isFeatured: form.isFeatured,
     }
     if (editing.value) {
       await $fetch(`/api/profile/projects/${editing.value.id}`, { method: 'PUT', body })

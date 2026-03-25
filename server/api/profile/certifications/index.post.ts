@@ -1,18 +1,18 @@
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
-  const { data, error } = validateSkillInput(body)
+  const { data, error } = validateCertificationInput(body)
 
   if (error || !data) {
     throw createError({ statusCode: 400, statusMessage: error })
   }
 
   const result = await db.query(
-    `INSERT INTO profile_skills (name, category, proficiency, level, notes)
+    `INSERT INTO profile_certifications (name, institution, platform, date, url)
      VALUES ($1, $2, $3, $4, $5)
      RETURNING *`,
-    [data.name, data.category, data.proficiency, data.level, data.notes],
+    [data.name, data.institution, data.platform, data.date, data.url],
   )
 
   setResponseStatus(event, 201)
-  return toSkill(result.rows[0])
+  return toCertification(result.rows[0])
 })

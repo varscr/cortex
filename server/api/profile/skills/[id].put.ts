@@ -9,10 +9,10 @@ export default defineEventHandler(async (event) => {
 
   const result = await db.query(
     `UPDATE profile_skills
-     SET name = $1, category = $2, proficiency = $3, updated_at = NOW()
-     WHERE id = $4
+     SET name = $1, category = $2, proficiency = $3, level = $4, notes = $5, updated_at = NOW()
+     WHERE id = $6
      RETURNING *`,
-    [data.name, data.category, data.proficiency, id],
+    [data.name, data.category, data.proficiency, data.level, data.notes, id],
   )
 
   if (result.rows.length === 0) {

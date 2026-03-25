@@ -1,6 +1,6 @@
 <template>
   <div>
-    <UiPageHeader title="Profile" description="About, skills, experience, education, projects, links, and goals" />
+    <UiPageHeader title="Profile" description="About, skills, experience, education, projects, certifications, links, goals, and references" />
 
     <div class="space-y-8">
       <ProfileAboutSection :about="about" @refresh="refreshAbout" />
@@ -8,8 +8,10 @@
       <ProfileExperienceSection :experience="experience ?? []" @refresh="refreshExperience" @delete="confirmDelete" />
       <ProfileEducationSection :education="education ?? []" @refresh="refreshEducation" @delete="confirmDelete" />
       <ProfileProjectsSection :projects="projects ?? []" @refresh="refreshProjects" @delete="confirmDelete" />
+      <ProfileCertificationsSection :certifications="certifications ?? []" @refresh="refreshCertifications" @delete="confirmDelete" />
       <ProfileLinksSection :links="links ?? []" @refresh="refreshLinks" @delete="confirmDelete" />
       <ProfileGoalsSection :goals="goals ?? []" @refresh="refreshGoals" @delete="confirmDelete" />
+      <ProfileReferencesSection :references="references ?? []" @refresh="refreshReferences" @delete="confirmDelete" />
     </div>
 
     <UiConfirmModal
@@ -24,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Skill, Experience, Project, About, Education, Link, Goal } from '~/server/utils/profile-types'
+import type { Skill, Experience, Project, About, Education, Link, Goal, Certification, Reference } from '~/server/utils/profile-types'
 
 const toast = useToast()
 
@@ -33,8 +35,10 @@ const { data: skills, refresh: refreshSkills } = useFetch<Skill[]>('/api/profile
 const { data: experience, refresh: refreshExperience } = useFetch<Experience[]>('/api/profile/experience')
 const { data: education, refresh: refreshEducation } = useFetch<Education[]>('/api/profile/education')
 const { data: projects, refresh: refreshProjects } = useFetch<Project[]>('/api/profile/projects')
+const { data: certifications, refresh: refreshCertifications } = useFetch<Certification[]>('/api/profile/certifications')
 const { data: links, refresh: refreshLinks } = useFetch<Link[]>('/api/profile/links')
 const { data: goals, refresh: refreshGoals } = useFetch<Goal[]>('/api/profile/goals')
+const { data: references, refresh: refreshReferences } = useFetch<Reference[]>('/api/profile/references')
 
 // --- Delete ---
 const deleteModalOpen = ref(false)
@@ -48,8 +52,10 @@ const deleteEndpoints: Record<string, string> = {
   experience: 'experience',
   project: 'projects',
   education: 'education',
+  certification: 'certifications',
   link: 'links',
   goal: 'goals',
+  reference: 'references',
 }
 
 const deleteRefreshers: Record<string, () => void> = {
@@ -57,8 +63,10 @@ const deleteRefreshers: Record<string, () => void> = {
   experience: () => refreshExperience(),
   project: () => refreshProjects(),
   education: () => refreshEducation(),
+  certification: () => refreshCertifications(),
   link: () => refreshLinks(),
   goal: () => refreshGoals(),
+  reference: () => refreshReferences(),
 }
 
 function confirmDelete(type: string, id: number, name: string) {

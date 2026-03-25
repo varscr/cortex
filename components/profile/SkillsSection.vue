@@ -11,20 +11,20 @@
           <div
             v-for="skill in group"
             :key="skill.id"
-            class="flex items-center justify-between group"
+            class="flex items-start justify-between group"
           >
-            <div class="flex items-center gap-3">
-              <span class="text-sm text-zinc-200">{{ skill.name }}</span>
-              <div class="flex gap-1">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="text-sm text-zinc-200">{{ skill.name }}</span>
                 <span
-                  v-for="i in 5"
-                  :key="i"
-                  class="w-1.5 h-1.5 rounded-full"
-                  :class="i <= skill.proficiency ? 'bg-white' : 'bg-zinc-700'"
-                />
+                  v-if="skill.level"
+                  class="px-1.5 py-0.5 text-[10px] font-medium rounded"
+                  :class="levelClass(skill.level)"
+                >{{ skill.level }}</span>
               </div>
+              <p v-if="skill.notes" class="text-xs text-zinc-500 italic mt-0.5">{{ skill.notes }}</p>
             </div>
-            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
               <UButton icon="i-heroicons-pencil-square" size="2xs" color="gray" variant="ghost" @click="openModal(skill)" />
               <UButton icon="i-heroicons-trash" size="2xs" color="gray" variant="ghost" @click="emit('delete', 'skill', skill.id, skill.name)" />
             </div>
@@ -48,24 +48,24 @@
       <option value="" disabled>Select category</option>
       <option v-for="cat in SKILL_CATEGORIES" :key="cat" :value="cat">{{ cat }}</option>
     </select>
-    <div>
-      <label class="text-xs text-zinc-400 block mb-2">Proficiency</label>
-      <div class="flex gap-2">
-        <button
-          v-for="i in 5"
-          :key="i"
-          type="button"
-          class="w-8 h-8 rounded-full border transition-colors"
-          :class="i <= form.proficiency ? 'bg-white border-white text-zinc-900' : 'border-white/10 text-zinc-500 hover:border-white/20'"
-          @click="form.proficiency = i"
-        >{{ i }}</button>
-      </div>
-    </div>
+    <select
+      v-model="form.level"
+      class="w-full bg-zinc-900 border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-white/20 transition-colors"
+    >
+      <option value="">No level set</option>
+      <option v-for="lvl in SKILL_LEVELS" :key="lvl" :value="lvl">{{ lvl }}</option>
+    </select>
+    <textarea
+      v-model="form.notes"
+      placeholder="Notes (optional, e.g. context about your experience level)"
+      rows="2"
+      class="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none focus:border-white/20 transition-colors resize-none"
+    />
   </UiFormModal>
 </template>
 
 <script setup lang="ts">
-import { SKILL_CATEGORIES } from '~/server/utils/profile-types'
+import { SKILL_CATEGORIES, SKILL_LEVELS } from '~/server/utils/profile-types'
 import type { Skill } from '~/server/utils/profile-types'
 
 const props = defineProps<{ skills: Skill[] }>()
@@ -78,7 +78,7 @@ const toast = useToast()
 const modalOpen = ref(false)
 const saving = ref(false)
 const editing = ref<Skill | null>(null)
-const form = reactive({ name: '', category: '', proficiency: 3 })
+const form = reactive({ name: '', category: '', level: '', notes: '' })
 
 const skillsByCategory = computed(() => {
   const grouped: Record<string, Skill[]> = {}
@@ -89,17 +89,30 @@ const skillsByCategory = computed(() => {
   return grouped
 })
 
+function levelClass(level: string) {
+  const map: Record<string, string> = {
+    Advanced: 'bg-green-500/10 text-green-400',
+    Intermediate: 'bg-blue-500/10 text-blue-400',
+    Learning: 'bg-amber-500/10 text-amber-400',
+    Exposure: 'bg-zinc-700 text-zinc-400',
+    Basic: 'bg-zinc-700 text-zinc-400',
+  }
+  return map[level] ?? 'bg-zinc-700 text-zinc-400'
+}
+
 function openModal(skill?: Skill) {
   if (skill) {
     editing.value = skill
     form.name = skill.name
     form.category = skill.category
-    form.proficiency = skill.proficiency
+    form.level = skill.level ?? ''
+    form.notes = skill.notes ?? ''
   } else {
     editing.value = null
     form.name = ''
     form.category = ''
-    form.proficiency = 3
+    form.level = ''
+    form.notes = ''
   }
   modalOpen.value = true
 }
@@ -107,11 +120,17 @@ function openModal(skill?: Skill) {
 async function save() {
   saving.value = true
   try {
+    const body = {
+      name: form.name,
+      category: form.category,
+      level: form.level || null,
+      notes: form.notes || null,
+    }
     if (editing.value) {
-      await $fetch(`/api/profile/skills/${editing.value.id}`, { method: 'PUT', body: form })
+      await $fetch(`/api/profile/skills/${editing.value.id}`, { method: 'PUT', body })
       toast.add({ title: 'Skill updated', color: 'green' })
     } else {
-      await $fetch('/api/profile/skills', { method: 'POST', body: form })
+      await $fetch('/api/profile/skills', { method: 'POST', body })
       toast.add({ title: 'Skill added', color: 'green' })
     }
     modalOpen.value = false
