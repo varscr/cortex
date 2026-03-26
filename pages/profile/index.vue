@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Skill, Experience, Project, About, Education, Link, Goal, Certification, Reference } from '~/server/utils/profile-types'
+import type { Skill, Experience, Project, About, Education, Link, Goal, Certification, Reference } from '~/server/utils/profile/types'
 
 const toast = useToast()
 

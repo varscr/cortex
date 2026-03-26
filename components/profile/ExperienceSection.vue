@@ -123,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Experience } from '~/server/utils/profile-types'
+import type { Experience } from '~/server/utils/profile/types'
 import { formatDateRange } from '~/composables/useFormatDate'
 
 const props = defineProps<{ experience: Experience[] }>()

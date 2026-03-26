@@ -65,8 +65,8 @@
 </template>
 
 <script setup lang="ts">
-import { SKILL_CATEGORIES, SKILL_LEVELS } from '~/server/utils/profile-types'
-import type { Skill } from '~/server/utils/profile-types'
+import { SKILL_CATEGORIES, SKILL_LEVELS } from '~/server/utils/profile/types'
+import type { Skill } from '~/server/utils/profile/types'
 
 const props = defineProps<{ skills: Skill[] }>()
 const emit = defineEmits<{

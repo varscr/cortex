@@ -81,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Education } from '~/server/utils/profile-types'
+import type { Education } from '~/server/utils/profile/types'
 import { formatDateRange } from '~/composables/useFormatDate'
 
 const props = defineProps<{ education: Education[] }>()

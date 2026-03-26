@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Goal } from '~/server/utils/profile-types'
+import type { Goal } from '~/server/utils/profile/types'
 import { formatDate } from '~/composables/useFormatDate'
 
 const props = defineProps<{ goals: Goal[] }>()

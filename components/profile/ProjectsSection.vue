@@ -128,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Project } from '~/server/utils/profile-types'
+import type { Project } from '~/server/utils/profile/types'
 
 const props = defineProps<{ projects: Project[] }>()
 const emit = defineEmits<{

@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Link } from '~/server/utils/profile-types'
+import type { Link } from '~/server/utils/profile/types'
 
 const props = defineProps<{ links: Link[] }>()
 const emit = defineEmits<{

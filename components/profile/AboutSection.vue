@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import type { About } from '~/server/utils/profile-types'
+import type { About } from '~/server/utils/profile/types'
 
 const props = defineProps<{ about: About | null }>()
 const emit = defineEmits<{ refresh: [] }>()

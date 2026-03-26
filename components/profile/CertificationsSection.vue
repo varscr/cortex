@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Certification } from '~/server/utils/profile-types'
+import type { Certification } from '~/server/utils/profile/types'
 import { formatDate } from '~/composables/useFormatDate'
 
 const props = defineProps<{ certifications: Certification[] }>()
