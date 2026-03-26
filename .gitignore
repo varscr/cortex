@@ -18,5 +18,8 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Uploaded data
+data/finances/
+
 # Logs
 build.log
