@@ -158,12 +158,12 @@ Multi-provider AI chat interface with RAG-powered context. See `docs/frontend/co
 
 ### Architecture
 
-- `server/utils/llm-types.ts` — LLM driver interfaces, agent config/run types
-- `server/utils/llm-driver-claude-cli.ts` — Claude Code CLI subprocess driver
-- `server/utils/llm-driver-opencode.ts` — OpenCode CLI subprocess driver
-- `server/utils/llm-driver-factory.ts` — provider → driver factory
-- `server/utils/llm-providers.ts` — available providers and models
-- `server/utils/agent-loader.ts` — reads TOML configs from `agents/` with variable substitution
+- `server/utils/llm/types.ts` — LLM driver interfaces, agent config/run types
+- `server/utils/llm/driver-claude-cli.ts` — Claude Code CLI subprocess driver
+- `server/utils/llm/driver-opencode.ts` — OpenCode CLI subprocess driver
+- `server/utils/llm/driver-factory.ts` — provider → driver factory
+- `server/utils/llm/providers.ts` — available providers and models
+- `server/utils/agents/loader.ts` — reads TOML configs from `agents/` with variable substitution
 
 ### Variable Substitution
 
@@ -194,7 +194,7 @@ See `docs/rag/adding-a-module.md` for full guide.
 - `POST /api/agents/ingest` — accepts Claude.ai export JSON, returns `{ runId }` (202)
 - `GET /api/agents/runs` — list agent run history
 - `GET /api/agents/runs/:id` — get run status + progress
-- Pipeline in `server/utils/knowledge-ingest.ts` — sequential processing, background execution
+- Pipeline in `server/utils/knowledge/ingest.ts` — sequential processing, background execution
 - Dependency: `smol-toml` (TOML parser)
 - Docker: Claude CLI installed in container, host `~/.claude` mounted read-only
 

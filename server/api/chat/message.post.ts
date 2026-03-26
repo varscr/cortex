@@ -1,7 +1,7 @@
-import { buildSystemPrompt } from '../../utils/chat-context'
-import { loadAgentConfig } from '../../utils/agent-loader'
-import { createDriver } from '../../utils/llm-driver-factory'
-import { buildChatContext } from '../../utils/chat-rag'
+import { buildSystemPrompt } from '../../utils/chat/context'
+import { loadAgentConfig } from '../../utils/agents/loader'
+import { createDriver } from '../../utils/llm/driver-factory'
+import { buildChatContext } from '../../utils/chat/rag'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)

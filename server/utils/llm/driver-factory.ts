@@ -1,6 +1,6 @@
-import type { LlmDriver } from './llm-types'
-import { ClaudeCliDriver } from './llm-driver-claude-cli'
-import { OpencodeDriver } from './llm-driver-opencode'
+import type { LlmDriver } from './types'
+import { ClaudeCliDriver } from './driver-claude-cli'
+import { OpencodeDriver } from './driver-opencode'
 
 export function createDriver(provider: string): LlmDriver {
   switch (provider) {

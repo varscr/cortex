@@ -1,4 +1,4 @@
-import type { KanbanBoardRow, KanbanBoard, KanbanColumnRow, KanbanColumn, KanbanCardRow, KanbanCard } from './kanban-types'
+import type { KanbanBoardRow, KanbanBoard, KanbanColumnRow, KanbanColumn, KanbanCardRow, KanbanCard } from './types'
 
 export function toKanbanBoard(row: KanbanBoardRow): KanbanBoard {
   return {

@@ -1,4 +1,4 @@
-import type { KnowledgeEntryRow, KnowledgeEntry } from './knowledge-types'
+import type { KnowledgeEntryRow, KnowledgeEntry } from './types'
 
 export function toKnowledgeEntry(row: KnowledgeEntryRow): KnowledgeEntry {
   return {

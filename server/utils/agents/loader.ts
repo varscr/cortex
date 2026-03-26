@@ -1,7 +1,7 @@
 import { readFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 import { parse } from 'smol-toml'
-import type { AgentConfig } from './llm-types'
+import type { AgentConfig } from '../llm/types'
 
 const AGENTS_DIR = join(process.cwd(), 'agents')
 

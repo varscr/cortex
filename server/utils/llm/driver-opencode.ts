@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import type { LlmDriver, CompletionRequest, CompletionResponse } from './llm-types'
+import type { LlmDriver, CompletionRequest, CompletionResponse } from './types'
 
 const SENSITIVE_ENV_KEYS = ['OPENAI_API_KEY', 'BINGX_API_KEY', 'BINGX_SECRET_KEY']
 

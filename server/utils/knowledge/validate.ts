@@ -1,5 +1,5 @@
-import { KNOWLEDGE_CATEGORIES, CONFIDENCE_LEVELS } from './knowledge-types'
-import type { KnowledgeEntryInput } from './knowledge-types'
+import { KNOWLEDGE_CATEGORIES, CONFIDENCE_LEVELS } from './types'
+import type { KnowledgeEntryInput } from './types'
 
 export function validateKnowledgeInput(body: any): { data?: KnowledgeEntryInput; error?: string } {
   if (!body.title || typeof body.title !== 'string' || !body.title.trim()) {

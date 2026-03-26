@@ -1,5 +1,5 @@
-import { runAgent } from './agent-runner'
-import type { KnowledgeEntryRow } from './knowledge-types'
+import { runAgent } from '../agents/runner'
+import type { KnowledgeEntryRow } from './types'
 
 interface ClaudeConversation {
   uuid: string

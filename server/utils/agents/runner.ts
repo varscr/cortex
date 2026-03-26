@@ -1,6 +1,6 @@
-import { loadAgentConfig } from './agent-loader'
-import { createDriver } from './llm-driver-factory'
-import type { CompletionResponse } from './llm-types'
+import { loadAgentConfig } from './loader'
+import { createDriver } from '../llm/driver-factory'
+import type { CompletionResponse } from '../llm/types'
 
 export async function runAgent(agentName: string, input: string): Promise<CompletionResponse> {
   const config = await loadAgentConfig(agentName)

@@ -41,12 +41,26 @@ Services: `postgres`, `cortex`, `adminer` (DB UI on :8080), `backup`
 - Transactions: `db.connect()` then BEGIN/COMMIT/ROLLBACK, always `client.release()` in finally
 
 ## Server Utils
-Auto-imported by Nuxt. Each module has three files in `server/utils/`:
-- `<module>-types.ts` — TypeScript types for DB rows and API responses
-- `<module>-validate.ts` — returns `{ data?, error? }`, caller throws `createError({ statusCode, statusMessage })`
-- `<module>-transform.ts` — snake_case Row to camelCase API, null arrays to `[]`, NUMERIC to `parseFloat()`
+Auto-imported by Nuxt from `server/utils/` subdirectories. Each module has its own folder with three core files:
+- `types.ts` — TypeScript types for DB rows and API responses
+- `validate.ts` — returns `{ data?, error? }`, caller throws `createError({ statusCode, statusMessage })`
+- `transform.ts` — snake_case Row to camelCase API, null arrays to `[]`, NUMERIC to `parseFloat()`
 
-Existing modules: log, kanban, profile, knowledge
+```
+server/utils/
+├── db.ts              # Shared pg.Pool
+├── log/               # Log entries module
+├── kanban/            # Kanban boards module
+├── knowledge/         # Knowledge base (+ hash, embed, ingest)
+├── chat/              # Chat (+ rag, context)
+├── profile/           # Profile (+ embed)
+├── llm/               # LLM drivers (types, providers, factory, drivers)
+├── agents/            # Agent loader + runner
+├── embed/             # Embedding/vector search core
+└── finances/          # Finances (+ hash, pdf-extract, ingest)
+```
+
+See `docs/backend/README.md` for full backend documentation.
 
 ## API Routes
 File-based routing at `server/api/<module>/` using Nuxt conventions:
@@ -123,22 +137,22 @@ Nuxt auto-imports composables from `composables/*/*.ts` via `imports.dirs` confi
 Native HTML + manual validation in submit handler.
 
 ## Modules
-log, kanban, profile, knowledge, chat — each with full CRUD API + types/validate/transform utils.
+log, kanban, profile, knowledge, chat, finances — each with full CRUD API + types/validate/transform utils in `server/utils/<module>/`.
 
 ## Chat System
 Multi-provider AI chat interface with RAG-powered context. See `docs/frontend/components/chat/README.md` for component documentation.
 
 ### Providers
-- **Claude CLI** (`llm-driver-claude-cli.ts`) — Uses `claude` command, Claude models
-- **OpenCode** (`llm-driver-opencode.ts`) — Uses `opencode run`, free Zen models
+- **Claude CLI** (`llm/driver-claude-cli.ts`) — Uses `claude` command, Claude models
+- **OpenCode** (`llm/driver-opencode.ts`) — Uses `opencode run`, free Zen models
 
 ### Architecture
-- `server/utils/llm-types.ts` — LLM driver interfaces, agent config/run types
-- `server/utils/llm-driver-claude-cli.ts` — Claude Code CLI subprocess driver
-- `server/utils/llm-driver-opencode.ts` — OpenCode CLI subprocess driver
-- `server/utils/llm-driver-factory.ts` — provider → driver factory
-- `server/utils/llm-providers.ts` — available providers and models
-- `server/utils/agent-loader.ts` — reads TOML configs from `agents/` with variable substitution
+- `server/utils/llm/types.ts` — LLM driver interfaces, agent config/run types
+- `server/utils/llm/driver-claude-cli.ts` — Claude Code CLI subprocess driver
+- `server/utils/llm/driver-opencode.ts` — OpenCode CLI subprocess driver
+- `server/utils/llm/driver-factory.ts` — provider → driver factory
+- `server/utils/llm/providers.ts` — available providers and models
+- `server/utils/agents/loader.ts` — reads TOML configs from `agents/` with variable substitution
 
 ### Variable Substitution
 Agent configs support `${VARIABLE}` syntax for runtime substitution:
@@ -155,16 +169,15 @@ LLM-powered agents defined by TOML config files in `agents/` directory.
 Create a `.toml` file in `agents/` with `name`, `description`, and `[model]` section. No code changes needed.
 
 ### Adding a new LLM provider
-1. Create `llm-driver-{name}.ts` implementing `LlmDriver`
-2. Add case to `llm-driver-factory.ts`
-3. Add provider + models to `llm-providers.ts`
-See `docs/rag/adding-a-module.md` for full guide.
+1. Create `server/utils/llm/driver-{name}.ts` implementing `LlmDriver`
+2. Add case to `server/utils/llm/driver-factory.ts`
+3. Add provider + models to `server/utils/llm/providers.ts`
 
 ### Knowledge Ingest
 - `POST /api/agents/ingest` — accepts Claude.ai export JSON, returns `{ runId }` (202)
 - `GET /api/agents/runs` — list agent run history
 - `GET /api/agents/runs/:id` — get run status + progress
-- Pipeline in `server/utils/knowledge-ingest.ts` — sequential processing, background execution
+- Pipeline in `server/utils/knowledge/ingest.ts` — sequential processing, background execution
 - Dependency: `smol-toml` (TOML parser)
 - Docker: Claude CLI installed in container, host `~/.claude` mounted read-only
 

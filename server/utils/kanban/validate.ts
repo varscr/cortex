@@ -1,4 +1,4 @@
-import type { BoardInput, ColumnInput, CardInput, CardMoveInput, ReorderInput } from './kanban-types'
+import type { BoardInput, ColumnInput, CardInput, CardMoveInput, ReorderInput } from './types'
 
 export function validateBoardInput(body: any): { data?: BoardInput; error?: string } {
   if (!body.name || typeof body.name !== 'string' || !body.name.trim()) {

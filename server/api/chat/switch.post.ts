@@ -1,5 +1,5 @@
-import { buildSystemPrompt } from '../../utils/chat-context'
-import { loadAgentConfig } from '../../utils/agent-loader'
+import { buildSystemPrompt } from '../../utils/chat/context'
+import { loadAgentConfig } from '../../utils/agents/loader'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)

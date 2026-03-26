@@ -1,4 +1,4 @@
-import type { SkillRow, Skill, ExperienceRow, Experience, ProjectRow, Project, AboutRow, About, EducationRow, Education, LinkRow, Link, GoalRow, Goal, CertificationRow, Certification, ReferenceRow, Reference } from './profile-types'
+import type { SkillRow, Skill, ExperienceRow, Experience, ProjectRow, Project, AboutRow, About, EducationRow, Education, LinkRow, Link, GoalRow, Goal, CertificationRow, Certification, ReferenceRow, Reference } from './types'
 
 export function toSkill(row: SkillRow): Skill {
   return {

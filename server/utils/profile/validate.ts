@@ -1,5 +1,5 @@
-import type { SkillInput, ExperienceInput, ProjectInput, AboutInput, EducationInput, LinkInput, GoalInput, CertificationInput, ReferenceInput } from './profile-types'
-import { SKILL_CATEGORIES, SKILL_LEVELS, GOAL_STATUSES } from './profile-types'
+import type { SkillInput, ExperienceInput, ProjectInput, AboutInput, EducationInput, LinkInput, GoalInput, CertificationInput, ReferenceInput } from './types'
+import { SKILL_CATEGORIES, SKILL_LEVELS, GOAL_STATUSES } from './types'
 
 export function validateSkillInput(body: any): { data?: SkillInput; error?: string } {
   if (!body.name || typeof body.name !== 'string' || !body.name.trim()) {
