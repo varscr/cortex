@@ -7,7 +7,7 @@ Filter bar component for search and filtering interfaces.
 ```vue
 <CardsFilter>
   <input placeholder="Search..." />
-  <FilterDropdown />
+  <FiltersFilter />
 </CardsFilter>
 ```
 
@@ -30,7 +30,7 @@ Filter bar component for search and filtering interfaces.
 ```vue
 <CardsFilter>
   <input v-model="search" placeholder="Search..." />
-  <UiFilterDropdown v-model="filter" :options="options" />
+  <FiltersFilter v-model="filter" :options="options" />
 </CardsFilter>
 ```
 
@@ -47,7 +47,7 @@ Filter bar component for search and filtering interfaces.
 ```vue
 <CardsFilter>
   <input placeholder="Search..." />
-  <FilterDropdown />
+  <FiltersFilter />
   <span class="ml-auto text-xs text-zinc-500">{{ count }} items</span>
 </CardsFilter>
 ```

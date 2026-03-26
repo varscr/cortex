@@ -99,10 +99,13 @@ validate → `db.query()` → transform → return
 Vue 3 Composition API (`ref`, `reactive`, `computed`) — no Pinia, keep state local or in composables.
 
 ### UI Components
-Before making frontend changes, always check `components/ui/` for reusable components:
-- `PageHeader`, `FilterDropdown`, `TagInput`, `FormModal`, `ConfirmModal`
+Before making frontend changes, always check the component folders for reusable components:
+- `components/modals/` - `<ModalsConfirm />`, `<ModalsForm />`
+- `components/filters/` - `<FiltersFilter />`
+- `components/forms/` - `<FormsTagInput />`
+- `components/ui/` - `<UiPageHeader />`
 
-If a suitable component exists, use and extend it. If not, create new reusable components in `components/ui/` rather than one-off implementations.
+If a suitable component exists, use and extend it. If not, create new reusable components in appropriate folders rather than one-off implementations.
 
 ### Component Structure
 Components are organized by feature in subdirectories with `pathPrefix: true`:
@@ -110,8 +113,11 @@ Components are organized by feature in subdirectories with `pathPrefix: true`:
 components/
 ├── chat/        → <ChatPanel />, <ChatHeader />, etc.
 ├── buttons/     → <ButtonsPrimary />, <ButtonsSecondary />, etc.
-├── cards/       → <Cards />, <CardsModal />, <CardsFilter />
-├── ui/          → <UiPageHeader />, <UiFilterDropdown />, etc.
+├── cards/       → <Cards />, <CardsPanel />, <CardsFilter />
+├── modals/      → <ModalsConfirm />, <ModalsForm />
+├── filters/    → <FiltersFilter />
+├── forms/       → <FormsTagInput />
+├── ui/          → <UiPageHeader />
 └── profile/     → <ProfileAboutSection />, etc.
 ```
 

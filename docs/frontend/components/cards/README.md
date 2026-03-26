@@ -10,7 +10,7 @@ Reusable card components for Cortex. Located in `components/cards/`.
 |-----------|------|----------------|
 | `Cards` | `Cards.vue` | `<Cards />` |
 | `CardsFilter` | `Filter.vue` | `<CardsFilter />` |
-| `CardsModal` | `Modal.vue` | `<CardsModal />` |
+| `CardsPanel` | `Panel.vue` | `<CardsPanel />` |
 
 ---
 
@@ -31,21 +31,21 @@ See [Cards.md](./Cards.md) for full documentation.
 ```vue
 <CardsFilter>
   <input placeholder="Search..." />
-  <UiFilterDropdown />
+  <FiltersFilter />
 </CardsFilter>
 ```
 
 See [CardsFilter.md](./CardsFilter.md) for full documentation.
 
-### CardsModal
+### CardsPanel
 
 ```vue
-<CardsModal>
-  Modal content
-</CardsModal>
+<CardsPanel>
+  Panel content
+</CardsPanel>
 ```
 
-See [CardsModal.md](./CardsModal.md) for full documentation.
+See [CardsPanel.md](./CardsPanel.md) for full documentation.
 
 ---
 
@@ -58,7 +58,7 @@ All card components share these common props:
 | `padding` | `boolean` | Add padding (Cards only, default: true) |
 | `noBorder` | `boolean` | Remove border (Cards only) |
 | `gap` | `string` | Gap class (CardsFilter only) |
-| `noPadding` | `boolean` | Remove padding (CardsModal only) |
+| `noPadding` | `boolean` | Remove padding (CardsPanel only) |
 
 ---
 

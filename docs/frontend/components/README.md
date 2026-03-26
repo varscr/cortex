@@ -14,6 +14,10 @@ components/
 │   ├── Danger.vue     → <ButtonsDanger />
 │   ├── Icon.vue       → <ButtonsIcon />
 │   └── Confirm.vue    → <ButtonsConfirm />
+├── cards/            # Card components
+│   ├── Cards.vue      → <Cards />
+│   ├── Panel.vue      → <CardsPanel />
+│   └── Filter.vue     → <CardsFilter />
 ├── chat/             # Chat-related components
 │   ├── Panel.vue      → <ChatPanel />
 │   ├── Header.vue     → <ChatHeader />
@@ -21,16 +25,15 @@ components/
 │   ├── Message.vue    → <ChatMessage />
 │   ├── Input.vue      → <ChatInput />
 │   └── MarkdownRenderer.vue → <ChatMarkdownRenderer />
-├── cards/            # Card components
-│   ├── Cards.vue      → <Cards />
-│   ├── Modal.vue      → <CardsModal />
-│   └── Filter.vue     → <CardsFilter />
+├── filters/          # Filter components
+│   └── Filter.vue     → <FiltersFilter />
+├── forms/            # Form components
+│   └── TagInput.vue   → <FormsTagInput />
+├── modals/           # Modal components
+│   ├── Confirm.vue    → <ModalsConfirm />
+│   └── Form.vue       → <ModalsForm />
 ├── ui/               # Generic UI components
-│   ├── PageHeader.vue    → <UiPageHeader />
-│   ├── FilterDropdown.vue → <UiFilterDropdown />
-│   ├── TagInput.vue      → <UiTagInput />
-│   ├── FormModal.vue     → <UiFormModal />
-│   └── ConfirmModal.vue  → <UiConfirmModal />
+│   └── PageHeader.vue → <UiPageHeader />
 └── profile/          # Profile section components
     ├── AboutSection.vue    → <ProfileAboutSection />
     ├── SkillsSection.vue   → <ProfileSkillsSection />
@@ -55,6 +58,20 @@ See [buttons README](./buttons/README.md) for detailed documentation.
 
 ---
 
+## Card Components
+
+Located in `components/cards/`
+
+| Component | Purpose |
+|-----------|---------|
+| `Cards` | Card container with title and padding options |
+| `CardsPanel` | Panel wrapper for card content |
+| `CardsFilter` | Filter bar for card lists |
+
+See [cards README](./cards/README.md) for detailed documentation.
+
+---
+
 ## Chat Components
 
 Located in `components/chat/`
@@ -72,17 +89,40 @@ See [chat README](./chat/README.md) for detailed documentation.
 
 ---
 
-## Cards Components
+## Filter Components
 
-Located in `components/cards/`
+Located in `components/filters/`
 
 | Component | Purpose |
 |-----------|---------|
-| `Cards` | Card container with title and padding options |
-| `CardsModal` | Modal wrapper for card content |
-| `CardsFilter` | Filter bar for card lists |
+| `FiltersFilter` | Dropdown filter selector |
 
-See [cards README](./cards/README.md) for detailed documentation.
+See [filters README](./filters/README.md) for detailed documentation.
+
+---
+
+## Form Components
+
+Located in `components/forms/`
+
+| Component | Purpose |
+|-----------|---------|
+| `FormsTagInput` | Tag input component with add/remove |
+
+See [forms README](./forms/README.md) for detailed documentation.
+
+---
+
+## Modal Components
+
+Located in `components/modals/`
+
+| Component | Purpose |
+|-----------|---------|
+| `ModalsConfirm` | Confirmation dialog |
+| `ModalsForm` | Modal for forms |
+
+See [modals README](./modals/README.md) for detailed documentation.
 
 ---
 
@@ -93,10 +133,6 @@ Located in `components/ui/`
 | Component | Purpose |
 |-----------|---------|
 | `UiPageHeader` | Page header with title |
-| `UiFilterDropdown` | Dropdown selector |
-| `UiTagInput` | Tag input component |
-| `UiFormModal` | Modal for forms |
-| `UiConfirmModal` | Confirmation dialog |
 
 ---
 
@@ -105,15 +141,14 @@ Located in `components/ui/`
 ### Creating New Components
 
 1. Place feature-specific components in `components/<feature>/`
-2. Place generic reusable components in `components/ui/`
-3. Use folder prefix pattern: file `Primary.vue` in `buttons/` → `<ButtonsPrimary />`
+2. Use folder prefix pattern: file `Primary.vue` in `buttons/` → `<ButtonsPrimary />`
 
 ### Component Naming
 
 - Use PascalCase for component names
 - Nuxt adds folder prefix with `pathPrefix: true` in nuxt.config.ts
 - File `buttons/Primary.vue` → component `<ButtonsPrimary />`
-- File `chat/Panel.vue` → component `<ChatPanel />`
+- File `filters/Filter.vue` → component `<FiltersFilter />`
 - File `ui/PageHeader.vue` → component `<UiPageHeader />`
 
 ### Props Design

@@ -65,7 +65,7 @@ interface ModelOption {
 
 ## Components Used
 
-- `UiFilterDropdown` - Provider and model selectors
+- `FiltersFilter` - Provider and model selectors
 - `ButtonsConfirm` - Switch confirmation
 - `ButtonsIcon` - Action buttons (history, new, close)
 

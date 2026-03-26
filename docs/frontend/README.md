@@ -10,10 +10,13 @@ Frontend documentation for Cortex. Covers Vue components, composables, and front
 docs/frontend/
 ├── components/        # Vue component documentation
 │   ├── buttons/       # Button components → <ButtonsPrimary />, etc.
-│   ├── cards/        # Card components → <Cards />, etc.
-│   ├── chat/         # Chat components → <ChatPanel />, etc.
-│   ├── ui/           # Generic UI components → <UiPageHeader />, etc.
-│   └── profile/      # Profile sections → <ProfileSkillsSection />, etc.
+│   ├── cards/         # Card components → <Cards />, etc.
+│   ├── chat/          # Chat components → <ChatPanel />, etc.
+│   ├── filters/       # Filter components → <FiltersFilter />
+│   ├── forms/         # Form components → <FormsTagInput />
+│   ├── modals/        # Modal components → <ModalsConfirm />, <ModalsForm />
+│   ├── ui/            # Generic UI components → <UiPageHeader />
+│   └── profile/       # Profile sections → <ProfileSkillsSection />, etc.
 └── composables/      # Composables documentation (coming soon)
 ```
 
@@ -24,8 +27,11 @@ docs/frontend/
 Documentation for reusable Vue components:
 
 - [Buttons](./components/buttons/README.md) - Button components (ButtonsPrimary, ButtonsIcon, etc.)
-- [Cards](./components/cards/README.md) - Card components (Cards, CardsFilter, CardsModal)
+- [Cards](./components/cards/README.md) - Card components (Cards, CardsFilter, CardsPanel)
 - [Chat](./components/chat/README.md) - Chat UI components (ChatPanel, ChatMessage, etc.)
+- [Filters](./components/filters/README.md) - Filter components (FiltersFilter)
+- [Forms](./components/forms/README.md) - Form components (FormsTagInput)
+- [Modals](./components/modals/README.md) - Modal components (ModalsConfirm, ModalsForm)
 
 ---
 
