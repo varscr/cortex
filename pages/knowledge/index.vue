@@ -2,7 +2,7 @@
   <div>
     <UiPageHeader title="Knowledge" description="Your personal knowledge base.">
       <template #actions>
-        <UiButton icon="i-heroicons-arrow-up-tray" @click="navigateTo('/knowledge/import')">Import</UiButton>
+        <ButtonsPrimary icon="i-heroicons-arrow-up-tray" label="Import" @click="navigateTo('/knowledge/import')" />
         <UButton v-if="entries.length > 0" icon="i-heroicons-trash" color="red" variant="soft" @click="showDeleteAll = true">Delete All</UButton>
       </template>
     </UiPageHeader>
@@ -90,7 +90,7 @@
       <div class="p-8 text-center flex flex-col items-center justify-center">
         <UIcon name="i-heroicons-academic-cap" class="w-10 h-10 text-zinc-600 mb-3" />
         <p class="text-zinc-400 text-sm">No knowledge entries yet.</p>
-        <UiButton variant="ghost" class="mt-4" @click="navigateTo('/knowledge/import')">Import from Claude</UiButton>
+        <ButtonsSecondary variant="ghost" label="Import from Claude" @click="navigateTo('/knowledge/import')" />
       </div>
     </UiCard>
 

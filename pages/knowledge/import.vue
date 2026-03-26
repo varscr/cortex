@@ -33,10 +33,10 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <UiButton variant="ghost" size="sm" @click="clearFile">Clear</UiButton>
-          <UiButton icon="i-heroicons-arrow-up-tray" size="sm" :loading="importing" :disabled="hasActiveRun" @click="startImport">
+          <ButtonsSecondary variant="ghost" size="sm" label="Clear" @click="clearFile" />
+          <ButtonsPrimary icon="i-heroicons-arrow-up-tray" size="sm" :loading="importing" :disabled="hasActiveRun" @click="startImport">
             {{ hasActiveRun ? 'Import running...' : 'Import' }}
-          </UiButton>
+          </ButtonsPrimary>
         </div>
       </div>
 

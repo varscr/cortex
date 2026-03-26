@@ -1,7 +1,7 @@
 <template>
   <UiCard title="Projects">
     <template #actions>
-      <UiButton icon="i-heroicons-plus" size="sm" label="Add" @click="openModal()" />
+      <ButtonsPrimary icon="i-heroicons-plus" size="sm" label="Add" @click="openModal()" />
     </template>
 
     <div v-if="projects.length" class="space-y-4">

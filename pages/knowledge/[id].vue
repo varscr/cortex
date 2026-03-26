@@ -122,8 +122,8 @@
 
         <!-- Actions -->
         <div class="flex justify-between items-center pt-2">
-          <UiButton @click="cancelEdit" label="Cancel" variant="ghost" />
-          <UiButton type="submit" label="Save" :loading="saving" />
+          <ButtonsSecondary label="Cancel" @click="cancelEdit" />
+          <ButtonsPrimary type="submit" label="Save" :loading="saving" />
         </div>
       </form>
     </div>

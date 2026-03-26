@@ -5,7 +5,7 @@
       description="Overview of your log entries and financial activity."
     >
       <template #actions>
-        <UiButton icon="i-heroicons-plus" @click="navigateTo('/log/new')">New Entry</UiButton>
+        <ButtonsPrimary icon="i-heroicons-plus" label="New Entry" @click="navigateTo('/log/new')" />
       </template>
     </UiPageHeader>
 
@@ -56,7 +56,7 @@
       <div v-else class="p-8 text-center flex flex-col items-center justify-center">
         <UIcon name="i-heroicons-document-text" class="w-10 h-10 text-zinc-600 mb-3" />
         <p class="text-zinc-400 text-sm">No activity recorded yet.</p>
-        <UiButton variant="ghost" class="mt-4" @click="navigateTo('/log/new')">Create first entry</UiButton>
+        <ButtonsSecondary variant="ghost" label="Create first entry" @click="navigateTo('/log/new')" />
       </div>
     </UiCard>
   </div>

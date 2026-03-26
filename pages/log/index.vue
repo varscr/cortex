@@ -2,7 +2,7 @@
   <div>
     <UiPageHeader title="Log" description="Your personal entries and reflections.">
       <template #actions>
-        <UiButton icon="i-heroicons-plus" @click="navigateTo('/log/new')">New Entry</UiButton>
+        <ButtonsPrimary icon="i-heroicons-plus" label="New Entry" @click="navigateTo('/log/new')" />
       </template>
     </UiPageHeader>
 
@@ -67,7 +67,7 @@
       <div class="p-8 text-center flex flex-col items-center justify-center">
         <UIcon name="i-heroicons-book-open" class="w-10 h-10 text-zinc-600 mb-3" />
         <p class="text-zinc-400 text-sm">No log entries yet.</p>
-        <UiButton variant="ghost" class="mt-4" @click="navigateTo('/log/new')">Write your first entry</UiButton>
+        <ButtonsSecondary variant="ghost" label="Write your first entry" @click="navigateTo('/log/new')" />
       </div>
     </UiCard>
 

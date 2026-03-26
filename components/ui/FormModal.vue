@@ -11,8 +11,8 @@
       <form @submit.prevent="$emit('submit')" class="p-6 space-y-4">
         <slot />
         <div class="flex justify-end gap-2 pt-2">
-          <UButton label="Cancel" color="gray" variant="ghost" @click="$emit('update:modelValue', false)" />
-          <UiButton type="submit" :label="submitLabel" :loading="loading" />
+          <ButtonsSecondary label="Cancel" @click="$emit('update:modelValue', false)" />
+          <ButtonsPrimary type="submit" :label="submitLabel" :loading="loading" />
         </div>
       </form>
     </div>

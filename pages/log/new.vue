@@ -89,8 +89,8 @@
 
         <!-- Actions -->
         <div class="flex justify-between items-center pt-2">
-          <UiButton to="/log" label="Cancel" variant="ghost" />
-          <UiButton type="submit" label="Save" :loading="saving" />
+          <NuxtLink to="/log" class="text-sm text-zinc-400 hover:text-white transition-colors">Cancel</NuxtLink>
+          <ButtonsPrimary type="submit" label="Save" :loading="saving" />
         </div>
       </form>
     </div>

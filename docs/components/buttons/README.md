@@ -55,6 +55,12 @@ See [Primary.md](./Primary.md) for full documentation.
 
 ---
 
+## Navigation
+
+For link buttons, use `<NuxtLink>` instead of button components. See [Navigation.md](./Navigation.md) for details.
+
+---
+
 ## Common Props
 
 All button components share these common props:
