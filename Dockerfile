@@ -7,11 +7,11 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     apt-get install -y nodejs && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Claude Code CLI globally via npm
-RUN npm install -g @anthropic-ai/claude-code
+# Install Claude Code CLI globally via bun
+RUN bun install -g @anthropic-ai/claude-code
 
-# Install OpenCode CLI globally via npm
-RUN npm install -g opencode-ai
+# Install OpenCode CLI globally via bun
+RUN bun install -g opencode-ai
 
 WORKDIR /app
 
