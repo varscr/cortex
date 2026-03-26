@@ -3,35 +3,13 @@
 </template>
 
 <script setup lang="ts">
-import { marked } from 'marked'
-import hljs from 'highlight.js'
-
 const props = defineProps<{
   content: string
 }>()
 
-marked.setOptions({
-  gfm: true,
-  breaks: false,
-})
+const { parse } = useMarkdown()
 
-const renderer = new marked.Renderer()
-
-renderer.code = function({ text, lang }: { text: string; lang?: string }) {
-  const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext'
-  const highlighted = hljs.highlight(text, { language }).value
-  return `<pre class="hljs"><code>${highlighted}</code></pre>`
-}
-
-marked.use({ renderer })
-
-const renderedContent = computed(() => {
-  try {
-    return marked.parse(props.content) as string
-  } catch {
-    return props.content
-  }
-})
+const renderedContent = computed(() => parse(props.content))
 </script>
 
 <style>

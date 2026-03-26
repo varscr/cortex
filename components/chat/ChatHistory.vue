@@ -15,7 +15,7 @@
         <UIcon name="i-heroicons-chat-bubble-left" class="w-4 h-4 text-zinc-600 flex-shrink-0" />
         <div class="flex-1 min-w-0">
           <p class="text-sm text-zinc-300 truncate">{{ s.title ?? 'New conversation' }}</p>
-          <p class="text-xs text-zinc-600 mt-0.5">{{ formatLabel(s.modelProvider, s.modelName) }} · {{ formatDate(s.createdAt) }}</p>
+          <p class="text-xs text-zinc-600 mt-0.5">{{ formatLabel(providers, s.modelProvider, s.modelName) }} · {{ formatDate(s.createdAt) }}</p>
         </div>
         <ButtonsIcon
           icon="i-heroicons-trash"
@@ -61,14 +61,5 @@ defineEmits<{
   delete: [id: number]
 }>()
 
-function formatLabel(providerId: string, modelId: string): string {
-  if (!props.providers) return modelId
-  const provider = props.providers.find(p => p.id === providerId)
-  const model = provider?.models.find(m => m.id === modelId)
-  return model?.name ?? (modelId.includes('/') ? modelId.split('/')[1] : modelId)
-}
-
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-}
+const { formatLabel, formatDate } = useChatFormatters()
 </script>

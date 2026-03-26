@@ -19,10 +19,10 @@
       :model-options="modelOptions"
       :pending-switch="!!pendingSwitch"
       :show-history="view === 'history'"
-      @confirm-switch="confirmSwitch"
-      @cancel-switch="cancelSwitch"
+      @confirm-switch="handleConfirmSwitch"
+      @cancel-switch="handleCancelSwitch"
       @toggle-history="toggleView"
-      @new-chat="newChat"
+      @new-chat="handleNewChat"
       @close="toggle"
     />
 
@@ -32,8 +32,8 @@
       :sessions="sessions ?? []"
       :active-id="activeSessionId"
       :providers="providers ?? undefined"
-      @select="selectSession"
-      @delete="deleteSession"
+      @select="handleSelectSession"
+      @delete="handleDeleteSession"
     />
 
     <!-- Chat view -->
@@ -47,7 +47,7 @@
         </div>
         <button
           class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm text-zinc-300 transition-colors"
-          @click="newChat"
+          @click="handleNewChat"
         >
           <UIcon name="i-heroicons-plus" class="w-4 h-4" />
           Start conversation
@@ -77,33 +77,22 @@
       <ChatInput
         v-model="inputText"
         :disabled="sending"
-        @send="sendMessage"
+        @send="handleSendMessage"
       />
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-const SESSION_KEY = 'cortex_chat_session_id'
-const PROVIDER_KEY = 'cortex_chat_provider'
-const MODEL_KEY = 'cortex_chat_model'
-
 const { isOpen, width, toggle, initWidth, saveWidth } = useChatPanel()
 
-const view = ref<'chat' | 'history'>('chat')
-const activeSessionId = ref<number | null>(null)
+const { view, activeSessionId, selectedProvider, selectedModel, pendingSwitch, initFromLocalStorage, setSessionId, setProvider, setModel, setView, setPendingSwitch } = useChatState()
+
 const inputText = ref('')
 const sending = ref(false)
 const messagesEl = ref<HTMLElement | null>(null)
-const inputRef = ref<{ focus: () => void } | null>(null)
-const pendingSwitch = ref<{ provider: string; model: string } | null>(null)
-
-const toast = useToast()
 
 const { data: providers } = useFetch<LlmProviderOption[]>('/api/chat/providers')
-
-const selectedProvider = ref('claude-code')
-const selectedModel = ref('claude-sonnet-4-6')
 
 const providerOptions = computed(() =>
   providers.value?.map(p => ({ label: p.name, value: p.id })) ?? []
@@ -117,72 +106,18 @@ const modelOptions = computed(() => {
 watch(selectedProvider, (newProvider) => {
   const provider = providers.value?.find(p => p.id === newProvider)
   if (provider?.models.length) {
-    selectedModel.value = provider.defaultModel || provider.models[0].id
-    localStorage.setItem(PROVIDER_KEY, newProvider)
-    localStorage.setItem(MODEL_KEY, selectedModel.value)
+    const defaultModel = provider.defaultModel || provider.models[0].id
+    setProvider(newProvider)
+    setModel(defaultModel)
   }
-})
-
-watch(selectedModel, (newModel) => {
-  localStorage.setItem(MODEL_KEY, newModel)
 })
 
 watch([selectedProvider, selectedModel], ([newProvider, newModel]) => {
   if (!activeSessionId.value || !sessionDetail.value) return
   const session = sessionDetail.value
   if (newProvider === session.modelProvider && newModel === session.modelName) return
-  pendingSwitch.value = { provider: newProvider, model: newModel }
+  setPendingSwitch({ provider: newProvider, model: newModel })
 })
-
-function confirmSwitch() {
-  if (!pendingSwitch.value) return
-  switchProvider(pendingSwitch.value.provider, pendingSwitch.value.model)
-  pendingSwitch.value = null
-}
-
-function cancelSwitch() {
-  if (!activeSessionId.value || !sessionDetail.value) {
-    pendingSwitch.value = null
-    return
-  }
-  const session = sessionDetail.value
-  selectedProvider.value = session.modelProvider
-  selectedModel.value = session.modelName
-  pendingSwitch.value = null
-}
-
-async function switchProvider(newProvider: string, newModel: string) {
-  if (!activeSessionId.value) return
-  sending.value = true
-  const currentContent = inputText.value.trim()
-
-  try {
-    const result = await $fetch<{ session: ChatSession; message?: ChatMessage }>('/api/chat/switch', {
-      method: 'POST',
-      body: {
-        sessionId: activeSessionId.value,
-        newProvider,
-        newModel,
-        pendingMessage: currentContent,
-      },
-    })
-
-    localStorage.setItem(PROVIDER_KEY, newProvider)
-    localStorage.setItem(MODEL_KEY, newModel)
-    inputText.value = ''
-
-    await refreshSession()
-    if (result.message) {
-      nextTick(() => scrollToBottom())
-    }
-
-    toast.add({ title: `Switched to ${newProvider}`, color: 'green' })
-  } catch {
-    toast.add({ title: 'Failed to switch provider', color: 'red' })
-  } finally {
-    sending.value = false
-  }
-}
 
 const { data: sessionDetail, refresh: refreshSession } = useFetch<ChatSessionDetail>(
   () => activeSessionId.value ? `/api/chat/sessions/${activeSessionId.value}` : null,
@@ -195,17 +130,14 @@ const { data: sessions, refresh: refreshSessions } = useFetch<ChatSession[]>('/a
   immediate: false,
 })
 
+const { createSession, deleteSession, sendMessage, switchProvider } = useChatApi({
+  onSendSuccess: () => refreshSession(),
+  onDeleteSuccess: () => refreshSessions(),
+})
+
 onMounted(() => {
   initWidth()
-
-  const storedId = localStorage.getItem(SESSION_KEY)
-  if (storedId) activeSessionId.value = parseInt(storedId)
-
-  const storedProvider = localStorage.getItem(PROVIDER_KEY)
-  if (storedProvider) selectedProvider.value = storedProvider
-
-  const storedModel = localStorage.getItem(MODEL_KEY)
-  if (storedModel) selectedModel.value = storedModel
+  initFromLocalStorage()
 })
 
 function startResize(e: MouseEvent) {
@@ -234,67 +166,91 @@ function startResize(e: MouseEvent) {
 }
 
 function toggleView() {
-  view.value = view.value === 'history' ? 'chat' : 'history'
-  if (view.value === 'history') refreshSessions()
+  const newView = view.value === 'history' ? 'chat' : 'history'
+  setView(newView)
+  if (newView === 'history') refreshSessions()
 }
 
-async function newChat() {
-  const session = await $fetch<ChatSession>('/api/chat/sessions', {
-    method: 'POST',
-    body: { provider: selectedProvider.value, model: selectedModel.value },
-  })
-  activeSessionId.value = session.id
-  localStorage.setItem(SESSION_KEY, String(session.id))
-  view.value = 'chat'
-  await refreshSession()
-  nextTick(() => {
-    const textarea = document.querySelector('.chat-input textarea') as HTMLTextAreaElement
-    textarea?.focus()
-  })
+async function handleNewChat() {
+  const session = await createSession(selectedProvider.value, selectedModel.value)
+  if (session) {
+    setSessionId(session.id)
+    setView('chat')
+    await refreshSession()
+    nextTick(() => {
+      const textarea = document.querySelector('.chat-input textarea') as HTMLTextAreaElement
+      textarea?.focus()
+    })
+  }
 }
 
-async function selectSession(id: number) {
-  activeSessionId.value = id
-  localStorage.setItem(SESSION_KEY, String(id))
-  view.value = 'chat'
+async function handleSelectSession(id: number) {
+  setSessionId(id)
+  setView('chat')
   scrollToBottom()
 }
 
-async function deleteSession(id: number) {
-  await $fetch(`/api/chat/sessions/${id}`, { method: 'DELETE' })
-  if (activeSessionId.value === id) {
-    activeSessionId.value = null
-    localStorage.removeItem(SESSION_KEY)
+async function handleDeleteSession(id: number) {
+  const success = await deleteSession(id)
+  if (success && activeSessionId.value === id) {
+    setSessionId(null)
   }
-  await refreshSessions()
 }
 
-async function sendMessage() {
+async function handleSendMessage() {
   const content = inputText.value.trim()
   if (!content || sending.value) return
 
   inputText.value = ''
   sending.value = true
 
-  try {
-    const result = await $fetch<{ message: ChatMessage; session: ChatSession }>('/api/chat/message', {
-      method: 'POST',
-      body: { content, sessionId: activeSessionId.value },
-    })
+  const result = await sendMessage(content, activeSessionId.value, activeSessionId.value)
 
-    if (!activeSessionId.value) {
-      activeSessionId.value = result.session.id
-      localStorage.setItem(SESSION_KEY, String(result.session.id))
-    }
-
-    await refreshSession()
-    scrollToBottom()
-  } catch {
-    toast.add({ title: 'Failed to send message', color: 'red' })
-    inputText.value = content
-  } finally {
-    sending.value = false
+  if (result && !activeSessionId.value) {
+    setSessionId(result.session.id)
   }
+
+  sending.value = false
+  await refreshSession()
+  scrollToBottom()
+}
+
+async function handleConfirmSwitch() {
+  if (!pendingSwitch.value || !activeSessionId.value) return
+
+  const currentContent = inputText.value.trim()
+  sending.value = true
+
+  const result = await switchProvider(
+    activeSessionId.value,
+    pendingSwitch.value.provider,
+    pendingSwitch.value.model,
+    currentContent
+  )
+
+  if (result) {
+    setProvider(pendingSwitch.value.provider)
+    setModel(pendingSwitch.value.model)
+    inputText.value = ''
+    await refreshSession()
+    if (result.message) {
+      nextTick(() => scrollToBottom())
+    }
+  }
+
+  setPendingSwitch(null)
+  sending.value = false
+}
+
+function handleCancelSwitch() {
+  if (!activeSessionId.value || !sessionDetail.value) {
+    setPendingSwitch(null)
+    return
+  }
+  const session = sessionDetail.value
+  setProvider(session.modelProvider)
+  setModel(session.modelName)
+  setPendingSwitch(null)
 }
 
 function scrollToBottom() {
