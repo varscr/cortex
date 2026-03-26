@@ -6,7 +6,7 @@
     </div>
 
     <!-- Upload Zone -->
-    <UiCard class="mb-8">
+    <Cards class="mb-8">
       <div
         class="border-2 border-dashed rounded-xl p-10 text-center transition-colors"
         :class="dragging ? 'border-white/20 bg-white/5' : 'border-white/5'"
@@ -45,7 +45,7 @@
         <UIcon name="i-heroicons-exclamation-triangle" class="w-4 h-4 shrink-0" />
         {{ parseError }}
       </div>
-    </UiCard>
+    </Cards>
 
     <!-- Active & Past Imports -->
     <div class="flex items-center justify-between mb-4">
@@ -53,7 +53,7 @@
       <span class="text-xs text-zinc-500">{{ runsTotal }} runs</span>
     </div>
 
-    <UiCard v-if="runs.length > 0" class="!p-0">
+    <Cards :padding="false" v-if="runs.length > 0">
       <div class="divide-y divide-white/5">
         <div v-for="run in runs" :key="run.id" class="px-5 py-4">
           <div class="flex items-center gap-4">
@@ -147,14 +147,14 @@
           </div>
         </div>
       </div>
-    </UiCard>
+    </Cards>
 
-    <UiCard v-else class="!p-0">
+    <Cards :padding="false" v-else>
       <div class="p-8 text-center">
         <UIcon name="i-heroicons-inbox" class="w-10 h-10 text-zinc-600 mx-auto mb-3" />
         <p class="text-zinc-400 text-sm">No imports yet.</p>
       </div>
-    </UiCard>
+    </Cards>
   </div>
 </template>
 

@@ -13,7 +13,7 @@
     </div>
 
     <!-- View Mode -->
-    <UiCard v-if="!editing">
+    <Cards v-if="!editing">
       <div class="space-y-4">
         <div class="flex flex-wrap gap-2 items-center text-sm text-zinc-400">
           <span>{{ entry.date }}</span>
@@ -33,7 +33,7 @@
           Created {{ entry.createdAt }} · Updated {{ entry.updatedAt }}
         </p>
       </div>
-    </UiCard>
+    </Cards>
 
     <!-- Edit Mode -->
     <div v-else>

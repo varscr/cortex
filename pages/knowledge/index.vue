@@ -16,7 +16,7 @@
     />
 
     <!-- Filters -->
-    <div class="linear-panel rounded-xl p-3 mb-6 flex flex-wrap items-center gap-3">
+    <CardsFilter>
       <div class="relative">
         <UIcon name="i-heroicons-magnifying-glass" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 pointer-events-none" />
         <input
@@ -42,11 +42,11 @@
         </template>
       </UiFilterDropdown>
       <UiFilterDropdown v-model="filterReviewed" :options="REVIEWED_OPTIONS" placeholder="All entries" />
-      <span class="ml-auto text-xs text-zinc-500">{{ total }} entries</span>
-    </div>
+        <span class="ml-auto text-xs text-zinc-500">{{ total }} entries</span>
+    </CardsFilter>
 
     <!-- Entry list -->
-    <UiCard v-if="entries.length > 0" class="!p-0">
+    <Cards :padding="false" v-if="entries.length > 0">
       <div class="divide-y divide-white/5">
         <div
           v-for="entry in entries"
@@ -83,16 +83,16 @@
           </div>
         </div>
       </div>
-    </UiCard>
+    </Cards>
 
     <!-- Empty state -->
-    <UiCard v-else-if="!pending" class="!p-0">
+    <Cards :padding="false" v-else-if="!pending">
       <div class="p-8 text-center flex flex-col items-center justify-center">
         <UIcon name="i-heroicons-academic-cap" class="w-10 h-10 text-zinc-600 mb-3" />
         <p class="text-zinc-400 text-sm">No knowledge entries yet.</p>
         <ButtonsSecondary variant="ghost" label="Import from Claude" @click="navigateTo('/knowledge/import')" />
       </div>
-    </UiCard>
+    </Cards>
 
     <!-- Pagination -->
     <div v-if="total > limit" class="flex justify-center mt-6">

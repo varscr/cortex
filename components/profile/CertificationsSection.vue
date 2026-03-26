@@ -1,5 +1,5 @@
 <template>
-  <UiCard title="Certifications">
+  <Cards title="Certifications">
     <template #actions>
       <ButtonsPrimary icon="i-heroicons-plus" size="sm" label="Add" @click="openModal()" />
     </template>
@@ -29,7 +29,7 @@
       </div>
     </div>
     <p v-else class="text-sm text-zinc-500">No certifications added yet.</p>
-  </UiCard>
+  </Cards>
 
   <UiFormModal v-model="modalOpen" :title="editing ? 'Edit Certification' : 'Add Certification'" :submit-label="editing ? 'Update' : 'Add'" :loading="saving" @submit="save">
     <input

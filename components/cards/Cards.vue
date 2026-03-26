@@ -1,5 +1,8 @@
 <template>
-  <div class="linear-panel rounded-xl overflow-hidden flex flex-col">
+  <div
+    class="linear-panel rounded-xl overflow-hidden flex flex-col"
+    :class="{ 'border-0': noBorder }"
+  >
     <!-- Optional Header -->
     <div v-if="$slots.header || title" class="px-6 py-5 border-b border-white/5 flex items-center justify-between">
       <div v-if="$slots.header">
@@ -16,7 +19,10 @@
     </div>
 
     <!-- Main Content -->
-    <div class="p-6 flex-1 min-h-0">
+    <div v-if="padding" class="p-6 flex-1 min-h-0">
+      <slot />
+    </div>
+    <div v-else class="flex-1 min-h-0">
       <slot />
     </div>
 
@@ -28,8 +34,13 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+withDefaults(defineProps<{
   title?: string
   description?: string
-}>()
+  padding?: boolean
+  noBorder?: boolean
+}>(), {
+  padding: true,
+  noBorder: false
+})
 </script>

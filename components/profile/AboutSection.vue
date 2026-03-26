@@ -1,5 +1,5 @@
 <template>
-  <UiCard title="About">
+  <Cards title="About">
     <template #actions>
       <ButtonsPrimary icon="i-heroicons-pencil-square" size="sm" label="Edit" @click="openModal()" />
     </template>
@@ -22,7 +22,7 @@
       </div>
     </div>
     <p v-else class="text-sm text-zinc-500">No about info yet. Click Edit to add your profile.</p>
-  </UiCard>
+  </Cards>
 
   <UiFormModal v-model="modalOpen" title="Edit About" :loading="saving" @submit="save">
     <input

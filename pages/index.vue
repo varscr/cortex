@@ -10,26 +10,26 @@
     </UiPageHeader>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <UiCard>
+      <Cards>
         <div class="flex flex-col">
           <span class="text-sm font-medium text-zinc-400 mb-2">This Month</span>
           <span class="text-4xl font-semibold text-white">{{ stats?.logThisMonth ?? 0 }}</span>
         </div>
-      </UiCard>
+      </Cards>
       
-      <UiCard>
+      <Cards>
         <div class="flex flex-col">
           <span class="text-sm font-medium text-zinc-400 mb-2">Total Entries</span>
           <span class="text-4xl font-semibold text-white">{{ stats?.logTotal ?? 0 }}</span>
         </div>
-      </UiCard>
+      </Cards>
       
-      <UiCard class="flex items-center justify-center group cursor-pointer hover:border-white/20 transition-colors" @click="navigateTo('/log/new')">
+      <Cards class="flex items-center justify-center group cursor-pointer hover:border-white/20 transition-colors" @click="navigateTo('/log/new')">
         <div class="flex flex-col items-center gap-2 text-zinc-400 group-hover:text-white transition-colors">
           <UIcon name="i-heroicons-book-open" class="w-8 h-8" />
           <span class="text-sm font-medium">Write Log</span>
         </div>
-      </UiCard>
+      </Cards>
     </div>
 
     <div class="mb-4 flex items-center justify-between">
@@ -37,7 +37,7 @@
       <NuxtLink to="/log" class="text-sm text-zinc-400 hover:text-white transition-colors">View all →</NuxtLink>
     </div>
 
-    <UiCard class="!p-0">
+    <Cards :padding="false" class="!p-0">
       <div v-if="recent?.length" class="divide-y divide-white/5">
         <div v-for="entry in recent" :key="entry.id" 
              class="p-4 flex items-center justify-between hover:bg-white/[0.02] cursor-pointer transition-colors"
@@ -58,7 +58,7 @@
         <p class="text-zinc-400 text-sm">No activity recorded yet.</p>
         <ButtonsSecondary variant="ghost" label="Create first entry" @click="navigateTo('/log/new')" />
       </div>
-    </UiCard>
+    </Cards>
   </div>
 </template>
 

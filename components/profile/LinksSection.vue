@@ -1,5 +1,5 @@
 <template>
-  <UiCard title="Links">
+  <Cards title="Links">
     <template #actions>
       <ButtonsPrimary icon="i-heroicons-plus" size="sm" label="Add" @click="openModal()" />
     </template>
@@ -22,7 +22,7 @@
       </div>
     </div>
     <p v-else class="text-sm text-zinc-500">No links added yet.</p>
-  </UiCard>
+  </Cards>
 
   <UiFormModal v-model="modalOpen" :title="editing ? 'Edit Link' : 'Add Link'" :submit-label="editing ? 'Update' : 'Add'" :loading="saving" @submit="save">
     <input
