@@ -83,7 +83,7 @@
             />
 
             <!-- Tags -->
-            <UiTagInput v-model="form.tags" />
+            <FormsTagInput v-model="form.tags" />
           </div>
         </div>
 

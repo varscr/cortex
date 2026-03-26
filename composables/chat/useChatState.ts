@@ -6,8 +6,8 @@ export function useChatState() {
   const view = useState('chat-view', () => 'chat' as 'chat' | 'history')
   const activeSessionId = useState<number | null>('chat-active-session', () => null)
 
-  const selectedProvider = useState('chat-provider', () => 'claude-code')
-  const selectedModel = useState('chat-model', () => 'claude-sonnet-4-6')
+  const selectedProvider = useState('chat-provider', () => 'opencode')
+  const selectedModel = useState('chat-model', () => 'big-pickle')
 
   const pendingSwitch = useState<{ provider: string; model: string } | null>('chat-pending-switch', () => null)
 

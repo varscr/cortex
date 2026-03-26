@@ -36,8 +36,8 @@ export const LLM_PROVIDERS: LlmProviderOption[] = [
   },
 ]
 
-export const DEFAULT_PROVIDER = 'claude-code'
-export const DEFAULT_MODEL = 'claude-sonnet-4-6'
+export const DEFAULT_PROVIDER = 'opencode'
+export const DEFAULT_MODEL = 'big-pickle'
 
 export function getProvider(id: string): LlmProviderOption | undefined {
   return LLM_PROVIDERS.find(p => p.id === id)

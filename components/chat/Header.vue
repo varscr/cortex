@@ -5,7 +5,7 @@
         {{ title }}
       </p>
       <div class="flex items-center gap-1.5 mt-1">
-        <UiFilterDropdown
+        <FiltersFilter
           :model-value="provider"
           :options="providerOptions"
           placeholder="Provider"
@@ -16,7 +16,7 @@
           menu-class="w-36"
           @update:model-value="$emit('update:provider', $event)"
         />
-        <UiFilterDropdown
+        <FiltersFilter
           :model-value="model"
           :options="modelOptions"
           placeholder="Model"

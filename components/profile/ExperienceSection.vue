@@ -104,13 +104,13 @@
     <div>
       <label class="text-xs text-zinc-400 block mb-1">Highlights</label>
       <div class="border border-white/10 rounded-lg px-3 py-2">
-        <UiTagInput v-model="form.highlights" placeholder="Add bullet point..." :lowercase="false" />
+        <FormsTagInput v-model="form.highlights" placeholder="Add bullet point..." :lowercase="false" />
       </div>
     </div>
     <div>
       <label class="text-xs text-zinc-400 block mb-1">Tech stack</label>
       <div class="border border-white/10 rounded-lg px-3 py-2">
-        <UiTagInput v-model="form.techStack" placeholder="Add tech..." :lowercase="false" />
+        <FormsTagInput v-model="form.techStack" placeholder="Add tech..." :lowercase="false" />
       </div>
     </div>
     <textarea

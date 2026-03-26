@@ -72,14 +72,14 @@
         <!-- Bottom bar -->
         <div class="flex flex-wrap items-center gap-4">
           <!-- Category -->
-          <UiFilterDropdown v-model="form.category" :options="categoryFormOptions" placeholder="Category" width="w-44">
+          <FiltersFilter v-model="form.category" :options="categoryFormOptions" placeholder="Category" width="w-44">
             <template #option="{ option, isActive }">
               <span class="flex items-center gap-2">
                 <UIcon v-if="option.value" :name="categoryIcon(option.value)" :class="['w-3.5 h-3.5', categoryColor(option.value)]" />
                 {{ option.label }}
               </span>
             </template>
-          </UiFilterDropdown>
+          </FiltersFilter>
 
           <!-- Confidence selector -->
           <div class="flex gap-1">
@@ -116,7 +116,7 @@
 
           <div class="ml-auto flex items-center gap-4">
             <!-- Tags -->
-            <UiTagInput v-model="form.tags" />
+            <FormsTagInput v-model="form.tags" />
           </div>
         </div>
 

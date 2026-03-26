@@ -3,11 +3,14 @@ import type { LlmDriver, CompletionRequest, CompletionResponse } from './types'
 
 const SENSITIVE_ENV_KEYS = ['OPENAI_API_KEY', 'BINGX_API_KEY', 'BINGX_SECRET_KEY']
 
-function buildPrompt(messages: CompletionRequest['messages']): string {
-  return messages.map(m => {
+function buildPrompt(messages: CompletionRequest['messages'], system?: string): string {
+  let prompt = ''
+  if (system) prompt += `[System]\n${system}\n\n`
+  prompt += messages.map(m => {
     const label = m.role === 'user' ? '[User]' : m.role === 'assistant' ? '[Assistant]' : '[System]'
     return `${label}\n${m.content}`
   }).join('\n\n')
+  return prompt
 }
 
 function cleanEnv(): Record<string, string> {
@@ -24,12 +27,16 @@ export class OpencodeDriver implements LlmDriver {
   readonly provider = 'opencode'
 
   complete(request: CompletionRequest): Promise<CompletionResponse> {
-    const prompt = buildPrompt(request.messages)
+    const prompt = buildPrompt(request.messages, request.system)
     const args = ['run', prompt, '--format', 'json']
 
+    console.log('[opencode] request:', { model: request.model, promptLength: prompt.length, args: args.slice(0, 3) })
+
     if (request.model) {
-      args.push('--model', request.model)
+      args.push('--model', `opencode/${request.model}`)
     }
+
+    console.log('[opencode] full command:', args.join(' '))
 
     const start = Date.now()
 
@@ -54,7 +61,7 @@ export class OpencodeDriver implements LlmDriver {
         const durationMs = Date.now() - start
 
         if (code !== 0) {
-          console.error('[opencode] stderr:', stderr)
+          console.error('[opencode] code:', code, 'stderr:', stderr, 'stdout:', stdout)
           return reject(new Error(`OpenCode exited with code ${code}: ${stderr || stdout}`))
         }
 
@@ -76,12 +83,14 @@ export class OpencodeDriver implements LlmDriver {
           }
 
           const text = texts.join('')
+          console.log('[opencode] parsed response:', { textsCount: texts.length, textLength: text.length, fallbackUsed: !text, rawStdout: stdout.slice(0, 200) })
           resolve({
             text: text || stdout.trim(),
             usage: { inputTokens: 0, outputTokens: 0 },
             durationMs,
           })
-        } catch {
+        } catch (e) {
+          console.log('[opencode] parse error, falling back:', { error: String(e), stdout: stdout.slice(0, 200) })
           resolve({
             text: stdout.trim(),
             usage: { inputTokens: 0, outputTokens: 0 },

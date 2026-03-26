@@ -15,9 +15,9 @@
           placeholder="Search transactions..."
           class="flex-1 min-w-[200px] px-3 py-2 bg-zinc-800 border border-white/10 rounded-md text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/20"
         />
-        <UiFilterDropdown v-model="filterAccount" :options="accountFilterOptions" placeholder="All accounts" />
-        <UiFilterDropdown v-model="filterType" :options="typeFilterOptions" placeholder="All types" />
-        <UiFilterDropdown v-model="filterCategory" :options="categoryFilterOptions" placeholder="All categories" />
+        <FiltersFilter v-model="filterAccount" :options="accountFilterOptions" placeholder="All accounts" />
+        <FiltersFilter v-model="filterType" :options="typeFilterOptions" placeholder="All types" />
+        <FiltersFilter v-model="filterCategory" :options="categoryFilterOptions" placeholder="All categories" />
         <input
           v-model="dateFrom"
           type="date"

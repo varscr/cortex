@@ -16,15 +16,15 @@
           class="w-64 bg-white/5 text-sm text-zinc-300 placeholder-zinc-600 rounded-lg pl-9 pr-3 py-1.5 border border-white/5 focus:outline-none focus:border-white/10 transition-colors"
         />
       </div>
-      <UiFilterDropdown v-model="filterType" :options="TYPE_OPTIONS" placeholder="All types" />
-      <UiFilterDropdown v-model="filterMood" :options="MOOD_OPTIONS" placeholder="All moods">
+      <FiltersFilter v-model="filterType" :options="TYPE_OPTIONS" placeholder="All types" />
+      <FiltersFilter v-model="filterMood" :options="MOOD_OPTIONS" placeholder="All moods">
         <template #option="{ option, isActive }">
           <span class="flex items-center gap-2">
             <UIcon v-if="option.value" :name="moodIcon(option.value)" :class="['w-3.5 h-3.5', moodIconColor(option.value)]" />
             {{ option.label }}
           </span>
         </template>
-      </UiFilterDropdown>
+        </FiltersFilter>
         <span class="ml-auto text-xs text-zinc-500">{{ total }} entries</span>
     </CardsFilter>
 
