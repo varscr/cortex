@@ -25,7 +25,7 @@
     <p v-else class="text-sm text-zinc-500">No references added yet.</p>
   </Cards>
 
-  <UiFormModal v-model="modalOpen" :title="editing ? 'Edit Reference' : 'Add Reference'" :submit-label="editing ? 'Update' : 'Add'" :loading="saving" @submit="save">
+  <ModalsForm v-model="modalOpen" :title="editing ? 'Edit Reference' : 'Add Reference'" :submit-label="editing ? 'Update' : 'Add'" :loading="saving" @submit="save">
     <input
       v-model="form.name"
       placeholder="Name"
@@ -47,7 +47,7 @@
       rows="2"
       class="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none focus:border-white/20 transition-colors resize-none"
     />
-  </UiFormModal>
+  </ModalsForm>
 </template>
 
 <script setup lang="ts">

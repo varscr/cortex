@@ -24,7 +24,7 @@
     <p v-else class="text-sm text-zinc-500">No links added yet.</p>
   </Cards>
 
-  <UiFormModal v-model="modalOpen" :title="editing ? 'Edit Link' : 'Add Link'" :submit-label="editing ? 'Update' : 'Add'" :loading="saving" @submit="save">
+  <ModalsForm v-model="modalOpen" :title="editing ? 'Edit Link' : 'Add Link'" :submit-label="editing ? 'Update' : 'Add'" :loading="saving" @submit="save">
     <input
       v-model="form.label"
       placeholder="Label"
@@ -49,7 +49,7 @@
         class="w-24 bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm text-white outline-none focus:border-white/20 transition-colors"
       />
     </div>
-  </UiFormModal>
+  </ModalsForm>
 </template>
 
 <script setup lang="ts">

@@ -52,7 +52,7 @@
     <p v-else class="text-sm text-zinc-500">No projects added yet.</p>
   </Cards>
 
-  <UiFormModal v-model="modalOpen" :title="editing ? 'Edit Project' : 'Add Project'" :submit-label="editing ? 'Update' : 'Add'" :loading="saving" @submit="save">
+  <ModalsForm v-model="modalOpen" :title="editing ? 'Edit Project' : 'Add Project'" :submit-label="editing ? 'Update' : 'Add'" :loading="saving" @submit="save">
     <input
       v-model="form.name"
       placeholder="Project name"
@@ -124,7 +124,7 @@
       <input v-model="form.isFeatured" type="checkbox" class="rounded border-white/10 bg-transparent" />
       Featured project
     </label>
-  </UiFormModal>
+  </ModalsForm>
 </template>
 
 <script setup lang="ts">

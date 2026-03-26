@@ -14,7 +14,7 @@
       <ProfileReferencesSection :references="references ?? []" @refresh="refreshReferences" @delete="confirmDelete" />
     </div>
 
-    <UiConfirmModal
+    <ModalsConfirm
       v-model="deleteModalOpen"
       title="Delete item"
       :message="`Are you sure you want to delete '${deleteName}'?`"

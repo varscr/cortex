@@ -24,7 +24,7 @@
     <p v-else class="text-sm text-zinc-500">No about info yet. Click Edit to add your profile.</p>
   </Cards>
 
-  <UiFormModal v-model="modalOpen" title="Edit About" :loading="saving" @submit="save">
+  <ModalsForm v-model="modalOpen" title="Edit About" :loading="saving" @submit="save">
     <input
       v-model="form.headline"
       placeholder="Headline"
@@ -75,7 +75,7 @@
         class="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none focus:border-white/20 transition-colors resize-none font-mono"
       />
     </div>
-  </UiFormModal>
+  </ModalsForm>
 </template>
 
 <script setup lang="ts">

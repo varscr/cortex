@@ -107,7 +107,7 @@
     </div>
 
     <!-- Account Modal -->
-    <UiFormModal
+    <ModalsForm
       v-model="showAccountModal"
       :title="editingAccount ? 'Edit Account' : 'Add Account'"
       :loading="savingAccount"
@@ -139,10 +139,10 @@
           <input v-model="accountForm.accountNumberLast4" type="text" maxlength="4" placeholder="0147" class="w-full px-3 py-2 bg-zinc-800 border border-white/10 rounded-md text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/20" />
         </div>
       </div>
-    </UiFormModal>
+    </ModalsForm>
 
     <!-- Delete Confirmation -->
-    <UiConfirmModal
+    <ModalsConfirm
       v-model="showDeleteModal"
       title="Delete Account"
       :message="`Delete '${deletingAccount?.name}'? This will also delete all statements and transactions for this account.`"

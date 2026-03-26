@@ -44,7 +44,7 @@
     <p v-else class="text-sm text-zinc-500">No experience added yet.</p>
   </Cards>
 
-  <UiFormModal v-model="modalOpen" :title="editing ? 'Edit Experience' : 'Add Experience'" :submit-label="editing ? 'Update' : 'Add'" :loading="saving" @submit="save">
+  <ModalsForm v-model="modalOpen" :title="editing ? 'Edit Experience' : 'Add Experience'" :submit-label="editing ? 'Update' : 'Add'" :loading="saving" @submit="save">
     <div class="grid grid-cols-2 gap-4">
       <input
         v-model="form.company"
@@ -119,7 +119,7 @@
       rows="2"
       class="w-full bg-transparent border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600 outline-none focus:border-white/20 transition-colors resize-none"
     />
-  </UiFormModal>
+  </ModalsForm>
 </template>
 
 <script setup lang="ts">

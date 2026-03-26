@@ -7,7 +7,7 @@
       </template>
     </UiPageHeader>
 
-    <UiConfirmModal
+    <ModalsConfirm
       v-model="showDeleteAll"
       title="Delete All Entries"
       :message="`Are you sure you want to delete all ${total} knowledge entries? This cannot be undone.`"

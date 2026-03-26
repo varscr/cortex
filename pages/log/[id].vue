@@ -107,7 +107,7 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <UiConfirmModal
+    <ModalsConfirm
       v-model="showDelete"
       title="Delete Entry"
       message="Are you sure you want to delete this entry? This action cannot be undone."
