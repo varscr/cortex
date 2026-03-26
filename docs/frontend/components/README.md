@@ -9,22 +9,31 @@ This document provides an overview of all reusable UI components in Cortex.
 ```
 components/
 ├── buttons/          # Reusable button components
-│   ├── ButtonsIcon.vue
-│   ├── ButtonsConfirm.vue
-│   ├── ButtonsPrimary.vue
-│   ├── ButtonsSecondary.vue
-│   └── ButtonsDanger.vue
+│   ├── Primary.vue    → <ButtonsPrimary />
+│   ├── Secondary.vue  → <ButtonsSecondary />
+│   ├── Danger.vue     → <ButtonsDanger />
+│   ├── Icon.vue       → <ButtonsIcon />
+│   └── Confirm.vue    → <ButtonsConfirm />
 ├── chat/             # Chat-related components
-│   ├── ChatPanel.vue
-│   ├── ChatHeader.vue
-│   ├── ChatHistory.vue
-│   ├── ChatMessage.vue
-│   ├── ChatInput.vue
-│   └── MarkdownRenderer.vue
-└── ui/               # Generic UI components
-    ├── Button.vue
-    ├── Card.vue
-    ├── FilterDropdown.vue
+│   ├── Panel.vue      → <ChatPanel />
+│   ├── Header.vue     → <ChatHeader />
+│   ├── History.vue    → <ChatHistory />
+│   ├── Message.vue    → <ChatMessage />
+│   ├── Input.vue      → <ChatInput />
+│   └── MarkdownRenderer.vue → <ChatMarkdownRenderer />
+├── cards/            # Card components
+│   ├── Cards.vue      → <Cards />
+│   ├── Modal.vue      → <CardsModal />
+│   └── Filter.vue     → <CardsFilter />
+├── ui/               # Generic UI components
+│   ├── PageHeader.vue    → <UiPageHeader />
+│   ├── FilterDropdown.vue → <UiFilterDropdown />
+│   ├── TagInput.vue      → <UiTagInput />
+│   ├── FormModal.vue     → <UiFormModal />
+│   └── ConfirmModal.vue  → <UiConfirmModal />
+└── profile/          # Profile section components
+    ├── AboutSection.vue    → <ProfileAboutSection />
+    ├── SkillsSection.vue   → <ProfileSkillsSection />
     └── ...
 ```
 
@@ -57,9 +66,23 @@ Located in `components/chat/`
 | `ChatHistory` | Session list with selection and deletion |
 | `ChatMessage` | Single message bubble with markdown support |
 | `ChatInput` | Text input with auto-resize and send button |
-| `MarkdownRenderer` | Renders markdown content with code highlighting |
+| `ChatMarkdownRenderer` | Renders markdown content with code highlighting |
 
 See [chat README](./chat/README.md) for detailed documentation.
+
+---
+
+## Cards Components
+
+Located in `components/cards/`
+
+| Component | Purpose |
+|-----------|---------|
+| `Cards` | Card container with title and padding options |
+| `CardsModal` | Modal wrapper for card content |
+| `CardsFilter` | Filter bar for card lists |
+
+See [cards README](./cards/README.md) for detailed documentation.
 
 ---
 
@@ -69,13 +92,11 @@ Located in `components/ui/`
 
 | Component | Purpose |
 |-----------|---------|
-| `UiButton` | Generic button with variants |
-| `UiCard` | Card container with title |
+| `UiPageHeader` | Page header with title |
 | `UiFilterDropdown` | Dropdown selector |
 | `UiTagInput` | Tag input component |
 | `UiFormModal` | Modal for forms |
 | `UiConfirmModal` | Confirmation dialog |
-| `UiPageHeader` | Page header with title |
 
 ---
 
@@ -85,14 +106,15 @@ Located in `components/ui/`
 
 1. Place feature-specific components in `components/<feature>/`
 2. Place generic reusable components in `components/ui/`
-3. Use the `Buttons*` pattern for button components in `components/buttons/`
+3. Use folder prefix pattern: file `Primary.vue` in `buttons/` → `<ButtonsPrimary />`
 
 ### Component Naming
 
 - Use PascalCase for component names
-- Prefix generic UI components with `Ui`
-- Prefix button components with `Buttons`
-- Prefix chat components with `Chat`
+- Nuxt adds folder prefix with `pathPrefix: true` in nuxt.config.ts
+- File `buttons/Primary.vue` → component `<ButtonsPrimary />`
+- File `chat/Panel.vue` → component `<ChatPanel />`
+- File `ui/PageHeader.vue` → component `<UiPageHeader />`
 
 ### Props Design
 

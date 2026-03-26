@@ -6,13 +6,13 @@ Reusable button components for Cortex. Located in `components/buttons/`.
 
 ## Overview
 
-| Component | File | Description |
-|-----------|------|-------------|
-| `ButtonsIcon` | `ButtonsIcon.vue` | Icon-only button for toolbars and actions |
-| `ButtonsConfirm` | `ButtonsConfirm.vue` | Yes/No confirmation pair |
-| `ButtonsPrimary` | `ButtonsPrimary.vue` | Primary action buttons |
-| `ButtonsSecondary` | `ButtonsSecondary.vue` | Secondary action buttons |
-| `ButtonsDanger` | `ButtonsDanger.vue` | Destructive action buttons |
+| Component | File | Component Name |
+|-----------|------|----------------|
+| `ButtonsIcon` | `Icon.vue` | `<ButtonsIcon />` |
+| `ButtonsConfirm` | `Confirm.vue` | `<ButtonsConfirm />` |
+| `ButtonsPrimary` | `Primary.vue` | `<ButtonsPrimary />` |
+| `ButtonsSecondary` | `Secondary.vue` | `<ButtonsSecondary />` |
+| `ButtonsDanger` | `Danger.vue` | `<ButtonsDanger />` |
 
 ---
 

@@ -5,6 +5,7 @@ Personal command center / second brain — Nuxt 3 + PostgreSQL + pgvector.
 
 ## Git
 - Never add "Co-Authored-By" lines to commit messages.
+- When making structural changes, update related documentation in `docs/` and sync to AGENTS.md.
 
 ## Runtime & Package Manager
 - Always use **Bun** — never npm, yarn, or pnpm.
@@ -85,10 +86,32 @@ Vue 3 Composition API (`ref`, `reactive`, `computed`) — no Pinia, keep state l
 
 ### UI Components
 Before making frontend changes, always check `components/ui/` for reusable components:
-- `Button`, `Card`, `PageHeader` — common UI elements
-- `FilterDropdown` — styled dropdown menus
+- `PageHeader`, `FilterDropdown`, `TagInput`, `FormModal`, `ConfirmModal`
 
 If a suitable component exists, use and extend it. If not, create new reusable components in `components/ui/` rather than one-off implementations.
+
+### Component Structure
+Components are organized by feature in subdirectories with `pathPrefix: true`:
+```
+components/
+├── chat/        → <ChatPanel />, <ChatHeader />, etc.
+├── buttons/     → <ButtonsPrimary />, <ButtonsSecondary />, etc.
+├── cards/       → <Cards />, <CardsModal />, <CardsFilter />
+├── ui/          → <UiPageHeader />, <UiFilterDropdown />, etc.
+└── profile/     → <ProfileAboutSection />, etc.
+```
+
+### Composables
+Composables follow the same pattern:
+```
+composables/
+├── chat/        → useChatPanel(), useChatState(), useChatApi(), etc.
+├── useSidebar.ts
+├── useTagInput.ts
+└── useFormatDate.ts
+```
+
+Nuxt auto-imports composables from `composables/*/*.ts` via `imports.dirs` config.
 
 ### UI
 - `useToast()` — green success, red errors
@@ -103,7 +126,7 @@ Native HTML + manual validation in submit handler.
 log, kanban, profile, knowledge, chat — each with full CRUD API + types/validate/transform utils.
 
 ## Chat System
-Multi-provider AI chat interface with RAG-powered context. See `docs/chat/README.md` for full documentation.
+Multi-provider AI chat interface with RAG-powered context. See `docs/frontend/components/chat/README.md` for component documentation.
 
 ### Providers
 - **Claude CLI** (`llm-driver-claude-cli.ts`) — Uses `claude` command, Claude models
@@ -135,7 +158,7 @@ Create a `.toml` file in `agents/` with `name`, `description`, and `[model]` sec
 1. Create `llm-driver-{name}.ts` implementing `LlmDriver`
 2. Add case to `llm-driver-factory.ts`
 3. Add provider + models to `llm-providers.ts`
-See `docs/chat/adding-a-provider.md` for full guide.
+See `docs/rag/adding-a-module.md` for full guide.
 
 ### Knowledge Ingest
 - `POST /api/agents/ingest` — accepts Claude.ai export JSON, returns `{ runId }` (202)

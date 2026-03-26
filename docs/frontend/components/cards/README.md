@@ -6,11 +6,11 @@ Reusable card components for Cortex. Located in `components/cards/`.
 
 ## Overview
 
-| Component | File | Description |
-|-----------|------|-------------|
-| `Cards` | `Cards.vue` | Main card component with header, content, footer |
-| `CardsFilter` | `CardsFilter.vue` | Filter bar component |
-| `CardsModal` | `CardsModal.vue` | Modal content wrapper |
+| Component | File | Component Name |
+|-----------|------|----------------|
+| `Cards` | `Cards.vue` | `<Cards />` |
+| `CardsFilter` | `Filter.vue` | `<CardsFilter />` |
+| `CardsModal` | `Modal.vue` | `<CardsModal />` |
 
 ---
 
@@ -31,7 +31,7 @@ See [Cards.md](./Cards.md) for full documentation.
 ```vue
 <CardsFilter>
   <input placeholder="Search..." />
-  <FilterDropdown />
+  <UiFilterDropdown />
 </CardsFilter>
 ```
 

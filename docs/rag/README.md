@@ -254,7 +254,7 @@ GET /api/search?q=career goals&sourceTypes=profile&limit=5
 | `embed-core.ts` shared foundation | ✅ done |
 | `GET /api/search` retrieval endpoint | ✅ done |
 | Finance embeddings | ⏳ when module returns |
-| RAG injection into chat agent | ✅ done - see `docs/chat/README.md` |
+| RAG injection into chat agent | ✅ done - see `docs/frontend/components/chat/README.md` |
 | Hybrid search (keyword + vector) | 🔮 advanced RAG |
 | Reranking | 🔮 advanced RAG |
 | Multi-chunk support for long documents | 🔮 future (`chunk_index` field ready) |

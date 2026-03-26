@@ -8,12 +8,12 @@ Chat-related Vue components for the Cortex AI assistant interface.
 
 ```
 components/chat/
-├── ChatPanel.vue          # Main container
-├── ChatHeader.vue         # Header with selectors and actions
-├── ChatHistory.vue        # Session list
-├── ChatMessage.vue        # Message bubble with markdown
-├── ChatInput.vue          # Text input with send
-└── MarkdownRenderer.vue   # Markdown rendering with code highlighting
+├── Panel.vue              → <ChatPanel />
+├── Header.vue             → <ChatHeader />
+├── History.vue            → <ChatHistory />
+├── Message.vue            → <ChatMessage />
+├── Input.vue              → <ChatInput />
+└── MarkdownRenderer.vue   → <ChatMarkdownRenderer />
 ```
 
 ---
@@ -27,17 +27,22 @@ components/chat/
 | [ChatHistory](./ChatHistory.md) | Session list with selection and deletion |
 | [ChatMessage](./ChatMessage.md) | Single message bubble with markdown support |
 | [ChatInput](./ChatInput.md) | Text input with auto-resize and send button |
-| [MarkdownRenderer](./MarkdownRenderer.md) | Renders markdown with code highlighting |
+| [ChatMarkdownRenderer](./MarkdownRenderer.md) | Renders markdown with code highlighting |
 
 ---
 
-## Architecture
+## Composables
 
-See [docs/chat/README.md](../../chat/README.md) for the complete chat system architecture, including:
-- API endpoints
-- Database schema
-- RAG context
-- LLM providers
+Chat functionality is split into composables in `composables/chat/`:
+
+```
+composables/chat/
+├── useChatPanel.ts      → Panel open/width state
+├── useChatState.ts     → Session, provider, model state
+├── useChatApi.ts       → API calls (send, create, delete)
+├── useChatFormatters.ts → formatLabel, formatDate
+└── useMarkdown.ts      → Markdown parsing
+```
 
 ---
 
@@ -72,6 +77,5 @@ Child components are typically used within ChatPanel:
 
 ## Related Documentation
 
-- [Chat API Documentation](../../chat/README.md)
 - [Button Components](../buttons/README.md)
 - [RAG Documentation](../../rag/README.md)
