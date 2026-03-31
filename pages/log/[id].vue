@@ -119,7 +119,7 @@
 </template>
 
 <script setup lang="ts">
-import { ENTRY_CONFIG, type EntryTypeKey } from '~/server/utils/entry-config'
+import { ENTRY_CONFIG, type EntryTypeKey } from '~/server/utils/log/entry-config'
 
 const { entryIcon, typeLabel, typeColor, typeBadgeClass, moodIcon, moodIconColor, moodBadgeColor } = useEntryHelpers()
 

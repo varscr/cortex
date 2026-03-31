@@ -23,6 +23,22 @@ function cleanEnv(): Record<string, string> {
   return env
 }
 
+function parseTexts(stdout: string): string {
+  const texts: string[] = []
+  for (const line of stdout.trim().split('\n')) {
+    if (!line.trim()) continue
+    try {
+      const parsed = JSON.parse(line)
+      if (parsed.type === 'text' && parsed.part?.text) {
+        texts.push(parsed.part.text)
+      }
+    } catch {
+      // Skip invalid JSON lines
+    }
+  }
+  return texts.join('') || stdout.trim()
+}
+
 export class OpencodeDriver implements LlmDriver {
   readonly provider = 'opencode'
 
@@ -30,73 +46,58 @@ export class OpencodeDriver implements LlmDriver {
     const prompt = buildPrompt(request.messages, request.system)
     const args = ['run', prompt, '--format', 'json']
 
-    console.log('[opencode] request:', { model: request.model, promptLength: prompt.length, args: args.slice(0, 3) })
-
     if (request.model) {
       args.push('--model', `opencode/${request.model}`)
     }
 
-    console.log('[opencode] full command:', args.join(' '))
-
     const start = Date.now()
 
     return new Promise((resolve, reject) => {
+      let resolved = false
       const proc = spawn('opencode', args, {
         env: cleanEnv(),
         stdio: ['pipe', 'pipe', 'pipe'],
+        cwd: '/tmp',
         timeout: 5 * 60 * 1000,
       })
 
       let stdout = ''
       let stderr = ''
 
-      proc.stdout.on('data', (data) => { stdout += data.toString() })
-      proc.stderr.on('data', (data) => { stderr += data.toString() })
+      proc.stdout.on('data', (data: Buffer) => {
+        stdout += data.toString()
+        // Resolve as soon as step_finish arrives — opencode keeps running after
+        if (!resolved && stdout.includes('"type":"step_finish"')) {
+          resolved = true
+          const durationMs = Date.now() - start
+          proc.kill()
+          resolve({
+            text: parseTexts(stdout),
+            usage: { inputTokens: 0, outputTokens: 0 },
+            durationMs,
+          })
+        }
+      })
+
+      proc.stderr.on('data', (data: Buffer) => { stderr += data.toString() })
 
       proc.on('error', (err) => {
-        reject(new Error(`OpenCode spawn failed: ${err.message}`))
+        if (!resolved) reject(new Error(`OpenCode spawn failed: ${err.message}`))
       })
 
       proc.on('close', (code) => {
+        if (resolved) return
         const durationMs = Date.now() - start
 
-        if (code !== 0) {
-          console.error('[opencode] code:', code, 'stderr:', stderr, 'stdout:', stdout)
+        if (code !== 0 && code !== null && !stdout.trim()) {
           return reject(new Error(`OpenCode exited with code ${code}: ${stderr || stdout}`))
         }
 
-        try {
-          // OpenCode returns multiple JSON lines - parse each and extract text
-          const lines = stdout.trim().split('\n')
-          const texts: string[] = []
-
-          for (const line of lines) {
-            if (!line.trim()) continue
-            try {
-              const parsed = JSON.parse(line)
-              if (parsed.type === 'text' && parsed.part?.text) {
-                texts.push(parsed.part.text)
-              }
-            } catch {
-              // Skip invalid JSON lines
-            }
-          }
-
-          const text = texts.join('')
-          console.log('[opencode] parsed response:', { textsCount: texts.length, textLength: text.length, fallbackUsed: !text, rawStdout: stdout.slice(0, 200) })
-          resolve({
-            text: text || stdout.trim(),
-            usage: { inputTokens: 0, outputTokens: 0 },
-            durationMs,
-          })
-        } catch (e) {
-          console.log('[opencode] parse error, falling back:', { error: String(e), stdout: stdout.slice(0, 200) })
-          resolve({
-            text: stdout.trim(),
-            usage: { inputTokens: 0, outputTokens: 0 },
-            durationMs,
-          })
-        }
+        resolve({
+          text: parseTexts(stdout),
+          usage: { inputTokens: 0, outputTokens: 0 },
+          durationMs,
+        })
       })
     })
   }
