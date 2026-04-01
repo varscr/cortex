@@ -1,8 +1,6 @@
 import { spawn } from 'node:child_process'
 import type { LlmDriver, CompletionRequest, CompletionResponse } from './types'
 
-const SENSITIVE_ENV_KEYS = ['OPENAI_API_KEY', 'BINGX_API_KEY', 'BINGX_SECRET_KEY']
-
 function buildPrompt(messages: CompletionRequest['messages'], system?: string): string {
   let prompt = ''
   if (system) prompt += `[System]\n${system}\n\n`
@@ -11,16 +9,6 @@ function buildPrompt(messages: CompletionRequest['messages'], system?: string): 
     return `${label}\n${m.content}`
   }).join('\n\n')
   return prompt
-}
-
-function cleanEnv(): Record<string, string> {
-  const env: Record<string, string> = {}
-  for (const [key, value] of Object.entries(process.env)) {
-    if (value !== undefined && !SENSITIVE_ENV_KEYS.includes(key)) {
-      env[key] = value
-    }
-  }
-  return env
 }
 
 function parseTexts(stdout: string): string {
@@ -55,7 +43,6 @@ export class OpencodeDriver implements LlmDriver {
     return new Promise((resolve, reject) => {
       let resolved = false
       const proc = spawn('opencode', args, {
-        env: cleanEnv(),
         stdio: ['pipe', 'pipe', 'pipe'],
         cwd: '/tmp',
         timeout: 5 * 60 * 1000,

@@ -1,23 +1,11 @@
 import { spawn } from 'node:child_process'
 import type { LlmDriver, CompletionRequest, CompletionResponse } from './types'
 
-const SENSITIVE_ENV_KEYS = ['OPENAI_API_KEY', 'BINGX_API_KEY', 'BINGX_SECRET_KEY']
-
 function buildPrompt(messages: CompletionRequest['messages']): string {
   return messages.map(m => {
     const label = m.role === 'user' ? '[User]' : m.role === 'assistant' ? '[Assistant]' : '[System]'
     return `${label}\n${m.content}`
   }).join('\n\n')
-}
-
-function cleanEnv(): Record<string, string> {
-  const env: Record<string, string> = {}
-  for (const [key, value] of Object.entries(process.env)) {
-    if (value !== undefined && !SENSITIVE_ENV_KEYS.includes(key)) {
-      env[key] = value
-    }
-  }
-  return env
 }
 
 export class ClaudeCliDriver implements LlmDriver {
@@ -39,7 +27,6 @@ export class ClaudeCliDriver implements LlmDriver {
 
     return new Promise((resolve, reject) => {
       const proc = spawn('claude', args, {
-        env: cleanEnv(),
         stdio: ['pipe', 'pipe', 'pipe'],
         timeout: 5 * 60 * 1000,
       })
