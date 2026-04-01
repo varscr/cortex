@@ -7,7 +7,7 @@ export function useChatState() {
   const activeSessionId = useState<number | null>('chat-active-session', () => null)
 
   const selectedProvider = useState('chat-provider', () => 'opencode')
-  const selectedModel = useState('chat-model', () => 'big-pickle')
+  const selectedModel = useState('chat-model', () => 'minimax-m2.5-free')
 
   const pendingSwitch = useState<{ provider: string; model: string } | null>('chat-pending-switch', () => null)
 

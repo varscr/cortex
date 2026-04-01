@@ -21,9 +21,10 @@ RUN bun install
 
 # Copy app source
 COPY . .
+RUN chmod +x /app/entrypoint.sh
 
 # Expose Nuxt default port
 EXPOSE 3000
 
-# Development mode with hot reload
-CMD ["bunx", "nuxt", "dev", "--host", "0.0.0.0"]
+# Start opencode serve + Nuxt via entrypoint
+CMD ["/app/entrypoint.sh"]

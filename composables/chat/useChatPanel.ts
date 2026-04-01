@@ -4,7 +4,7 @@ const MIN_WIDTH = 280
 const MAX_WIDTH = 640
 
 export function useChatPanel() {
-  const isOpen = useState('chat-panel-open', () => false)
+  const isOpen = useState('chat-panel-open', () => true)
   const width = useState('chat-panel-width', () => DEFAULT_WIDTH)
 
   function toggle() {
