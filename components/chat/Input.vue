@@ -1,6 +1,6 @@
 <template>
   <div class="px-3 py-3 border-t border-white/5 flex-shrink-0">
-    <div class="flex items-end gap-2 linear-panel rounded-xl px-3 py-2">
+    <div class="flex items-center gap-2 linear-panel rounded-xl px-3 py-2">
       <textarea
         ref="textareaEl"
         :value="modelValue"
