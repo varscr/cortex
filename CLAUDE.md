@@ -14,14 +14,14 @@ Personal command center / second brain — Nuxt 3 + PostgreSQL + pgvector.
 - Lock file is `bun.lock`, never `package-lock.json`.
 
 ## Docker-First Development
-Everything runs inside Docker — never run `bun dev` or postgres locally. Docker requires `sudo`.
+Everything runs inside Docker — never run `bun dev` or postgres locally.
 
 ```bash
-sudo docker compose up -d --build         # Start all services
-sudo docker compose up -d --build cortex  # Rebuild app only
-sudo docker compose logs -f cortex        # View logs
-sudo docker compose restart cortex        # Restart app
-sudo docker compose exec postgres psql -U cortex -d cortex_db  # Access DB
+docker compose up -d --build         # Start all services
+docker compose up -d --build cortex  # Rebuild app only
+docker compose logs -f cortex        # View logs
+docker compose restart cortex        # Restart app
+docker compose exec postgres psql -U cortex -d cortex_db  # Access DB
 ```
 
 Services: `postgres`, `cortex`, `adminer` (DB UI on :8080), `backup`
