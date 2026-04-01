@@ -1,5 +1,5 @@
 <template>
-  <div class="h-16 flex items-center gap-2 px-4 border-b border-white/5 flex-shrink-0">
+  <div class="min-h-[64px] py-2 flex items-center gap-2 px-4 border-b border-white/5 flex-shrink-0">
     <div class="flex-1 min-w-0">
       <p class="text-base font-medium text-zinc-200 truncate">
         {{ title }}

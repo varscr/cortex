@@ -25,7 +25,6 @@ interface SendResponse {
 }
 
 interface UseChatApiOptions {
-  onSwitchSuccess?: (provider: string, model: string) => void
   onSendSuccess?: () => void
   onDeleteSuccess?: () => void
 }
@@ -33,11 +32,16 @@ interface UseChatApiOptions {
 export function useChatApi(options: UseChatApiOptions = {}) {
   const toast = useToast()
 
-  async function sendMessage(content: string, sessionId: number | null, currentSessionId: number | null): Promise<{ message: ChatMessage; session: ChatSession } | null> {
+  async function sendMessage(
+    content: string,
+    sessionId: number | null,
+    provider?: string,
+    model?: string
+  ): Promise<{ message: ChatMessage; session: ChatSession } | null> {
     try {
       const result = await $fetch<SendResponse>('/api/chat/message', {
         method: 'POST',
-        body: { content, sessionId: currentSessionId },
+        body: { content, sessionId, provider, model },
       })
       options.onSendSuccess?.()
       return result
@@ -82,7 +86,6 @@ export function useChatApi(options: UseChatApiOptions = {}) {
           pendingMessage,
         },
       })
-      options.onSwitchSuccess?.(newProvider, newModel)
       return result
     } catch {
       toast.add({ title: 'Failed to switch provider', color: 'red' })

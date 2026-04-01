@@ -3,7 +3,7 @@
     :class="[
       'flex items-center justify-center rounded-md transition-colors',
       sizeClasses[size],
-      variantClasses[variant],
+      active ? activeClasses[variant] : variantClasses[variant],
       { 'opacity-0 group-hover:opacity-100': groupHover },
       { 'pointer-events-none': disabled }
     ]"
@@ -52,5 +52,11 @@ const variantClasses = {
   default: 'text-zinc-500 hover:text-zinc-300 hover:bg-white/5',
   ghost: 'text-zinc-400 hover:text-white hover:bg-white/[0.04]',
   danger: 'text-zinc-600 hover:text-red-400 hover:bg-white/5'
+}
+
+const activeClasses = {
+  default: 'text-zinc-200 bg-white/10',
+  ghost: 'text-white bg-white/10',
+  danger: 'text-red-400 bg-red-500/10'
 }
 </script>

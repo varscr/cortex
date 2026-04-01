@@ -49,6 +49,3 @@ export function isValidProviderModel(provider: string, model: string): boolean {
   return !!getProvider(provider)?.models.find(m => m.id === model)
 }
 
-export function getModelName(providerId: string, modelId: string): string {
-  return getProvider(providerId)?.models.find(m => m.id === modelId)?.name ?? modelId
-}

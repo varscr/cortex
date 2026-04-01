@@ -31,27 +31,20 @@
       v-if="view === 'history'"
       :sessions="sessions ?? []"
       :active-id="activeSessionId"
-      :providers="providers ?? undefined"
+      :providers="providers ?? null"
       @select="handleSelectSession"
       @delete="handleDeleteSession"
     />
 
     <!-- Chat view -->
     <template v-else>
-      <!-- Empty state -->
-      <div v-if="!activeSessionId" class="flex-1 flex flex-col items-center justify-center text-center px-6 gap-4">
+      <!-- Empty state / New Chat prompt -->
+      <div v-if="!messages.length && !sending" class="flex-1 flex flex-col items-center justify-center text-center px-6 gap-4">
         <UIcon name="i-heroicons-chat-bubble-left-right" class="w-10 h-10 text-zinc-700" />
         <div>
           <p class="text-sm text-zinc-400 font-medium mb-1">Ask anything</p>
           <p class="text-xs text-zinc-600">Searches your log, knowledge, and profile automatically.</p>
         </div>
-        <button
-          class="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-sm text-zinc-300 transition-colors"
-          @click="handleNewChat"
-        >
-          <UIcon name="i-heroicons-plus" class="w-4 h-4" />
-          Start conversation
-        </button>
       </div>
 
       <!-- Messages -->
@@ -84,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-const { isOpen, width, toggle, initWidth, saveWidth } = useChatPanel()
+const { isOpen, width, toggle, initWidth, saveWidth, MIN_WIDTH, MAX_WIDTH } = useChatPanel()
 
 const { view, activeSessionId, selectedProvider, selectedModel, pendingSwitch, initFromLocalStorage, setSessionId, setProvider, setModel, setView, setPendingSwitch } = useChatState()
 
@@ -119,10 +112,18 @@ watch([selectedProvider, selectedModel], ([newProvider, newModel]) => {
   setPendingSwitch({ provider: newProvider, model: newModel })
 })
 
-const { data: sessionDetail, refresh: refreshSession } = useFetch<ChatSessionDetail>(
-  () => activeSessionId.value ? `/api/chat/sessions/${activeSessionId.value}` : null,
-  { watch: [activeSessionId] },
+const { data: _sessionData, refresh: refreshSession } = useAsyncData<ChatSessionDetail | null>(
+  () => (activeSessionId.value ? `session-${activeSessionId.value}` : 'no-session'),
+  () => {
+    if (!activeSessionId.value) return Promise.resolve(null)
+    return $fetch<ChatSessionDetail>(`/api/chat/sessions/${activeSessionId.value}`)
+  },
+  {
+    watch: [activeSessionId],
+    immediate: !!activeSessionId.value,
+  }
 )
+const sessionDetail = computed(() => _sessionData.value)
 
 const messages = computed(() => sessionDetail.value?.messages ?? [])
 
@@ -149,7 +150,7 @@ function startResize(e: MouseEvent) {
   document.body.style.cursor = 'col-resize'
 
   function onMove(e: MouseEvent) {
-    const next = Math.max(280, Math.min(640, startWidth + (startX - e.clientX)))
+    const next = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, startWidth + (startX - e.clientX)))
     width.value = next
   }
 
@@ -171,18 +172,13 @@ function toggleView() {
   if (newView === 'history') refreshSessions()
 }
 
-async function handleNewChat() {
-  if (!activeSessionId.value || messages.value.length === 0) return
-  const session = await createSession(selectedProvider.value, selectedModel.value)
-  if (session) {
-    setSessionId(session.id)
-    setView('chat')
-    await refreshSession()
-    nextTick(() => {
-      const textarea = document.querySelector('.chat-input textarea') as HTMLTextAreaElement
-      textarea?.focus()
-    })
-  }
+function handleNewChat() {
+  setSessionId(null)
+  setView('chat')
+  nextTick(() => {
+    const textarea = document.querySelector('.chat-input textarea') as HTMLTextAreaElement
+    textarea?.focus()
+  })
 }
 
 async function handleSelectSession(id: number) {
@@ -205,7 +201,12 @@ async function handleSendMessage() {
   inputText.value = ''
   sending.value = true
 
-  const result = await sendMessage(content, activeSessionId.value, activeSessionId.value)
+  const result = await sendMessage(
+    content,
+    activeSessionId.value,
+    activeSessionId.value ? undefined : selectedProvider.value,
+    activeSessionId.value ? undefined : selectedModel.value
+  )
 
   if (result && !activeSessionId.value) {
     setSessionId(result.session.id)

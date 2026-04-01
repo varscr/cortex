@@ -30,7 +30,7 @@ export interface ChatSession {
 export interface ChatMessageRow {
   id: number
   session_id: number
-  role: string
+  role: 'user' | 'assistant'
   content: string
   sources: ChatSource[]
   token_count: number | null
@@ -41,7 +41,7 @@ export interface ChatMessageRow {
 export interface ChatMessage {
   id: number
   sessionId: number
-  role: string
+  role: 'user' | 'assistant'
   content: string
   sources: ChatSource[]
   tokenCount: number | null

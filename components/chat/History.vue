@@ -39,21 +39,10 @@ interface Session {
   createdAt: string
 }
 
-interface ProviderModel {
-  id: string
-  name: string
-}
-
-interface Provider {
-  id: string
-  name: string
-  models: ProviderModel[]
-}
-
 const props = defineProps<{
   sessions: Session[]
   activeId: number | null
-  providers: Provider[] | null
+  providers: LlmProviderOption[] | null
 }>()
 
 defineEmits<{
