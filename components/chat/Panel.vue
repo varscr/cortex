@@ -172,6 +172,7 @@ function toggleView() {
 }
 
 async function handleNewChat() {
+  if (!activeSessionId.value || messages.value.length === 0) return
   const session = await createSession(selectedProvider.value, selectedModel.value)
   if (session) {
     setSessionId(session.id)
