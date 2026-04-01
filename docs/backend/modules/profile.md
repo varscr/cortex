@@ -17,4 +17,4 @@ Nested routes per section: `server/api/profile/<section>/` (e.g., skills, experi
 
 ## Schema
 
-Tables in `db/init/01-schema.sql` and extensions in `db/init/04-profile-schema-v2.sql`.
+Tables in `db/init/01-core.sql`.

@@ -17,6 +17,6 @@ Standard CRUD with filters: `mood`, `entry_type`, `tags`, `search`, `dateFrom`/`
 
 ## Schema
 
-Table: `log_entries` in `db/init/01-schema.sql`
+Table: `log_entries` in `db/init/01-core.sql`
 
 Fields: id, title, content, tags (TEXT[]), mood, entry_type, is_pinned, date, created_at, updated_at

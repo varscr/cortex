@@ -32,4 +32,4 @@ Standard CRUD with filters: `category`, `confidence`, `tag`, `search`, `isReview
 
 ## Schema
 
-Table: `knowledge_entries` in `db/init/03-agent-schema.sql`, dedup index in `db/init/04-knowledge-dedup.sql`
+Table: `knowledge_entries` in `db/init/02-agent.sql`, dedup index in `db/init/02-agent.sql` too.

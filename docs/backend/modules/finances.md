@@ -38,6 +38,6 @@ Uses Claude Sonnet, temperature 0.1. Handles both:
 
 ## Schema
 
-Tables: `finance_accounts`, `finance_statements`, `finance_transactions` in `db/init/06-finances-schema.sql`
+Tables: `finance_accounts`, `finance_statements`, `finance_transactions` in `db/init/04-finances.sql`
 
-Reuses existing `agent_runs` table from `db/init/03-agent-schema.sql` for processing status tracking.
+Reuses existing `agent_runs` table from `db/init/02-agent.sql` for processing status tracking.

@@ -188,8 +188,8 @@ Create a `.toml` file in `agents/` with `name`, `description`, and `[model]` sec
 - Docker: Claude CLI installed in container, host `~/.claude` mounted read-only
 
 ## Database Schema
-- Schema in `db/init/01-schema.sql` — runs automatically on first `docker compose up`
-- Agent schema in `db/init/03-agent-schema.sql` — `knowledge_entries` + `agent_runs` tables
+- Schema in `db/init/01-core.sql` — runs automatically on first `docker compose up`
+- Agent schema in `db/init/02-agent.sql` — `knowledge_entries` + `agent_runs` tables
 - Schema changes: edit existing file (all `IF NOT EXISTS`) or add a new numbered file
 
 ## Do NOT

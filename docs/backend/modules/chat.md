@@ -41,4 +41,4 @@ Supports `${PROVIDER}` and `${MODEL}` variable substitution for dynamic provider
 
 ## Schema
 
-Tables: `chat_sessions`, `chat_messages` in `db/init/05-chat-schema.sql`
+Tables: `chat_sessions`, `chat_messages` in `db/init/03-chat.sql`

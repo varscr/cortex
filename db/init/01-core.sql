@@ -78,6 +78,11 @@ CREATE TABLE IF NOT EXISTS profile_about (
     bio TEXT,
     location VARCHAR(200),
     avatar_url VARCHAR(500),
+    email VARCHAR(200),
+    job_title VARCHAR(200),
+    status VARCHAR(200),
+    cv_pdf_url VARCHAR(500),
+    cv_html TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -99,9 +104,14 @@ CREATE TABLE IF NOT EXISTS profile_experience (
     id SERIAL PRIMARY KEY,
     company VARCHAR(200) NOT NULL,
     role VARCHAR(200) NOT NULL,
+    location VARCHAR(200),
+    employment_type VARCHAR(50),
     start_date DATE NOT NULL,
     end_date DATE,
     description TEXT,
+    tech_stack TEXT[] DEFAULT '{}',
+    highlights TEXT[] DEFAULT '{}',
+    reason_for_leaving TEXT,
     is_current BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -134,7 +144,12 @@ CREATE TABLE IF NOT EXISTS profile_projects (
     description TEXT,
     url VARCHAR(500),
     repo_url VARCHAR(500),
+    type VARCHAR(50),
+    role_type VARCHAR(50),
+    status VARCHAR(50),
+    client VARCHAR(200),
     tech_stack TEXT[] DEFAULT '{}',
+    highlights TEXT[] DEFAULT '{}',
     image_url VARCHAR(500),
     is_featured BOOLEAN DEFAULT false,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -145,9 +160,32 @@ CREATE TABLE IF NOT EXISTS profile_skills (
     id SERIAL PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     category VARCHAR(50) NOT NULL,
+    level VARCHAR(50),
     proficiency INTEGER NOT NULL DEFAULT 3,
+    notes TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS profile_certifications (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(200) NOT NULL,
+  institution VARCHAR(200) NOT NULL,
+  platform VARCHAR(100),
+  date DATE,
+  url VARCHAR(500),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS profile_references (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(200) NOT NULL,
+  title VARCHAR(200),
+  contact VARCHAR(500),
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- ================================
@@ -177,3 +215,4 @@ CREATE INDEX IF NOT EXISTS idx_profile_education_start ON profile_education(star
 CREATE INDEX IF NOT EXISTS idx_profile_links_position ON profile_links(position);
 CREATE INDEX IF NOT EXISTS idx_profile_goals_status ON profile_goals(status);
 CREATE INDEX IF NOT EXISTS idx_profile_goals_target ON profile_goals(target_date);
+CREATE INDEX IF NOT EXISTS idx_profile_certifications_date ON profile_certifications(date DESC);

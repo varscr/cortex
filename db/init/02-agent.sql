@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS knowledge_entries (
     source_conversation_id VARCHAR(200),
     source_conversation_title VARCHAR(500),
     is_reviewed BOOLEAN DEFAULT false,
+    content_hash CHAR(64),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -18,6 +19,8 @@ CREATE INDEX IF NOT EXISTS idx_knowledge_entries_tags ON knowledge_entries USING
 CREATE INDEX IF NOT EXISTS idx_knowledge_entries_confidence ON knowledge_entries(confidence);
 CREATE INDEX IF NOT EXISTS idx_knowledge_entries_reviewed ON knowledge_entries(is_reviewed);
 CREATE INDEX IF NOT EXISTS idx_knowledge_entries_created ON knowledge_entries(created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_knowledge_entries_content_hash
+ON knowledge_entries (content_hash) WHERE content_hash IS NOT NULL;
 
 -- Agent execution log (tracks ingest runs, future agent runs)
 CREATE TABLE IF NOT EXISTS agent_runs (

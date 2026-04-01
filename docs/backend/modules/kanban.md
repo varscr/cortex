@@ -18,6 +18,6 @@ Task boards with columns and draggable cards.
 
 ## Schema
 
-Tables: `kanban_boards`, `kanban_columns`, `kanban_cards` in `db/init/01-schema.sql`
+Tables: `kanban_boards`, `kanban_columns`, `kanban_cards` in `db/init/01-core.sql`
 
 Card moves use transactions (BEGIN/COMMIT) to reorder positions atomically.
