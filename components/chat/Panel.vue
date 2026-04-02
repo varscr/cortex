@@ -79,7 +79,7 @@
 <script setup lang="ts">
 const { isOpen, width, toggle, initWidth, saveWidth, MIN_WIDTH, MAX_WIDTH } = useChatPanel()
 
-const { view, activeSessionId, selectedProvider, selectedModel, pendingSwitch, initFromLocalStorage, setSessionId, setProvider, setModel, setView, setPendingSwitch } = useChatState()
+const { view, activeSessionId, selectedProvider, selectedModel, pendingSwitch, setSessionId, setProvider, setModel, setView, setPendingSwitch } = useChatState()
 
 const inputText = ref('')
 const sending = ref(false)
@@ -120,7 +120,6 @@ const { data: _sessionData, refresh: refreshSession } = useAsyncData<ChatSession
   },
   {
     watch: [activeSessionId],
-    immediate: !!activeSessionId.value,
   }
 )
 const sessionDetail = computed(() => _sessionData.value)
@@ -138,8 +137,8 @@ const { createSession, deleteSession, sendMessage, switchProvider } = useChatApi
 
 onMounted(() => {
   initWidth()
-  initFromLocalStorage()
 })
+
 
 function startResize(e: MouseEvent) {
   e.preventDefault()
@@ -184,6 +183,7 @@ function handleNewChat() {
 async function handleSelectSession(id: number) {
   setSessionId(id)
   setView('chat')
+  await refreshSession()
   scrollToBottom()
 }
 
