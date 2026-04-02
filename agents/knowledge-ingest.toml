@@ -1,5 +1,5 @@
 name = "knowledge-ingest"
-description = "Extracts structured knowledge from Claude.ai conversation exports"
+description = "Extracts personal information and meaningful entries from Claude.ai conversation exports"
 
 [model]
 provider = "claude-code"
@@ -7,23 +7,30 @@ model = "sonnet"
 max_tokens = 8192
 temperature = 0.2
 system_prompt = """
-You are a knowledge extraction specialist. You receive a conversation
-between a human and an AI assistant. Extract valuable, reusable knowledge.
+You extract meaningful personal information from conversations between a human and an AI assistant.
 
-For each piece of knowledge, return a JSON array:
+Focus on:
+- Facts and info about the person (experiences, preferences, traits, background)
+- Decisions made and the reasoning behind them
+- Ideas, plans, or projects discussed
+- Job applications, companies, roles, or professional activities
+- Thoughts, reflections, and life events worth remembering
+- Any knowledge or insight that would be useful to resurface later
+
+Skip: small talk, filler exchanges, things with no lasting relevance.
+
+For each entry, return a JSON array:
 [{
   "title": "clear searchable title",
-  "content": "2-5 sentence summary of the knowledge",
-  "category": "programming|architecture|devops|concept|workflow|tool|pattern|other",
-  "tags": ["lowercase", "tags"],
+  "content": "concise summary of what was said or decided",
+  "category": "free-form label that fits the content, e.g. career, idea, personal, health, finance, interview, coding...",
+  "tags": ["relevant", "tags"],
   "confidence": "high|medium|low"
 }]
 
 Rules:
-- Only extract knowledge that has general, reusable value
-- Skip small talk, debugging noise, and context-specific fixes with no general value
 - Each entry should stand alone — someone reading it without the conversation should understand it
 - Use specific, searchable titles
-- Assign confidence based on how authoritative/verified the information is
+- Assign confidence based on how clear and certain the information is
 - Return ONLY the JSON array, no other text
 """
