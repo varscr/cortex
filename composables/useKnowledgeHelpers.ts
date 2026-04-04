@@ -15,17 +15,17 @@ const CONFIDENCE_CONFIG = {
   low: { icon: 'i-heroicons-question-mark-circle-solid', color: 'text-red-400', badgeColor: 'red', label: 'Low' },
 } as const
 
-export const CATEGORY_OPTIONS = [
+export const KNOWLEDGE_CATEGORY_OPTIONS = [
   { label: 'All categories', value: '' },
   ...Object.entries(CATEGORY_CONFIG).map(([value, cfg]) => ({ label: cfg.label, value })),
 ]
 
-export const CONFIDENCE_OPTIONS = [
+export const KNOWLEDGE_CONFIDENCE_OPTIONS = [
   { label: 'All confidence', value: '' },
   ...Object.entries(CONFIDENCE_CONFIG).map(([value, cfg]) => ({ label: cfg.label, value })),
 ]
 
-export const REVIEWED_OPTIONS = [
+export const KNOWLEDGE_REVIEWED_OPTIONS = [
   { label: 'All entries', value: '' },
   { label: 'Reviewed', value: 'true' },
   { label: 'Unreviewed', value: 'false' },

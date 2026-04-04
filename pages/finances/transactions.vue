@@ -48,7 +48,7 @@
             class="px-2 py-1 bg-zinc-800 border border-white/5 rounded text-xs text-zinc-400 focus:outline-none focus:border-white/20 cursor-pointer"
             @change="updateCategory(tx.id, ($event.target as HTMLSelectElement).value)"
           >
-            <option v-for="cat in CATEGORY_OPTIONS" :key="cat.value" :value="cat.value">{{ cat.label }}</option>
+            <option v-for="cat in FINANCE_CATEGORY_OPTIONS" :key="cat.value" :value="cat.value">{{ cat.label }}</option>
           </select>
 
           <span v-if="tx.installmentCurrent && tx.installmentTotal" class="text-xs text-zinc-500 whitespace-nowrap">
@@ -98,11 +98,11 @@ const accountFilterOptions = computed(() => [
 ])
 const typeFilterOptions = [
   { value: '', label: 'All types' },
-  ...TYPE_OPTIONS,
+  ...FINANCE_TRANSACTION_TYPE_OPTIONS,
 ]
 const categoryFilterOptions = [
   { value: '', label: 'All categories' },
-  ...CATEGORY_OPTIONS,
+  ...FINANCE_CATEGORY_OPTIONS,
 ]
 
 // Query params

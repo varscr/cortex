@@ -26,12 +26,12 @@ const INSTITUTION_CONFIG: Record<string, { label: string; color: string }> = {
   nu: { label: 'NU', color: 'text-purple-400' },
 }
 
-export const CATEGORY_OPTIONS = Object.entries(CATEGORY_CONFIG).map(([value, cfg]) => ({
+export const FINANCE_CATEGORY_OPTIONS = Object.entries(CATEGORY_CONFIG).map(([value, cfg]) => ({
   value,
   label: cfg.label,
 }))
 
-export const TYPE_OPTIONS = [
+export const FINANCE_TRANSACTION_TYPE_OPTIONS = [
   { value: 'income', label: 'Income' },
   { value: 'expense', label: 'Expense' },
   { value: 'payment', label: 'Payment' },
@@ -40,12 +40,12 @@ export const TYPE_OPTIONS = [
   { value: 'transfer', label: 'Transfer' },
 ]
 
-export const ACCOUNT_TYPE_OPTIONS = [
+export const FINANCE_ACCOUNT_TYPE_OPTIONS = [
   { value: 'savings', label: 'Savings' },
   { value: 'credit_card', label: 'Credit Card' },
 ]
 
-export const INSTITUTION_OPTIONS = [
+export const FINANCE_INSTITUTION_OPTIONS = [
   { value: 'bancolombia', label: 'Bancolombia' },
   { value: 'nu', label: 'NU' },
 ]

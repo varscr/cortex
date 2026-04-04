@@ -43,7 +43,7 @@
           class="w-64 bg-white/5 text-sm text-zinc-300 placeholder-zinc-600 rounded-lg pl-9 pr-3 py-1.5 border border-white/5 focus:outline-none focus:border-white/10 transition-colors"
         />
       </div>
-      <FiltersFilter v-model="filterCategory" :options="CATEGORY_OPTIONS" placeholder="All categories">
+      <FiltersFilter v-model="filterCategory" :options="KNOWLEDGE_CATEGORY_OPTIONS" placeholder="All categories">
         <template #option="{ option, isActive }">
           <span class="flex items-center gap-2">
             <UIcon v-if="option.value" :name="categoryIcon(option.value)" :class="['w-3.5 h-3.5', categoryColor(option.value)]" />
@@ -51,7 +51,7 @@
           </span>
         </template>
       </FiltersFilter>
-      <FiltersFilter v-model="filterConfidence" :options="CONFIDENCE_OPTIONS" placeholder="All confidence">
+      <FiltersFilter v-model="filterConfidence" :options="KNOWLEDGE_CONFIDENCE_OPTIONS" placeholder="All confidence">
         <template #option="{ option, isActive }">
           <span class="flex items-center gap-2">
             <UIcon v-if="option.value" :name="confidenceIcon(option.value)" :class="['w-3.5 h-3.5', confidenceColor(option.value)]" />
@@ -59,7 +59,7 @@
           </span>
         </template>
       </FiltersFilter>
-      <FiltersFilter v-model="filterReviewed" :options="REVIEWED_OPTIONS" placeholder="All entries" />
+      <FiltersFilter v-model="filterReviewed" :options="KNOWLEDGE_REVIEWED_OPTIONS" placeholder="All entries" />
         <span class="ml-auto text-xs text-zinc-500">{{ total }} entries</span>
     </CardsFilter>
 
@@ -133,7 +133,7 @@
 
 <script setup lang="ts">
 import { formatDate } from '~/composables/useFormatDate'
-import { CATEGORY_OPTIONS, CONFIDENCE_OPTIONS, REVIEWED_OPTIONS } from '~/composables/useKnowledgeHelpers'
+import { KNOWLEDGE_CATEGORY_OPTIONS, KNOWLEDGE_CONFIDENCE_OPTIONS, KNOWLEDGE_REVIEWED_OPTIONS } from '~/composables/useKnowledgeHelpers'
 
 const { categoryIcon, categoryColor, categoryBadgeColor, categoryLabel, confidenceIcon, confidenceColor, confidenceBadgeColor, confidenceLabel } = useKnowledgeHelpers()
 

@@ -123,14 +123,14 @@
             <label class="text-xs text-zinc-400 mb-1 block">Institution</label>
             <select v-model="accountForm.institution" class="w-full px-3 py-2 bg-zinc-800 border border-white/10 rounded-md text-sm text-white focus:outline-none focus:border-white/20">
               <option value="" disabled>Select</option>
-              <option v-for="opt in INSTITUTION_OPTIONS" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+              <option v-for="opt in FINANCE_INSTITUTION_OPTIONS" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
             </select>
           </div>
           <div>
             <label class="text-xs text-zinc-400 mb-1 block">Type</label>
             <select v-model="accountForm.type" class="w-full px-3 py-2 bg-zinc-800 border border-white/10 rounded-md text-sm text-white focus:outline-none focus:border-white/20">
               <option value="" disabled>Select</option>
-              <option v-for="opt in ACCOUNT_TYPE_OPTIONS" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+              <option v-for="opt in FINANCE_ACCOUNT_TYPE_OPTIONS" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
             </select>
           </div>
         </div>

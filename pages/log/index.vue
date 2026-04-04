@@ -16,8 +16,8 @@
           class="w-64 bg-white/5 text-sm text-zinc-300 placeholder-zinc-600 rounded-lg pl-9 pr-3 py-1.5 border border-white/5 focus:outline-none focus:border-white/10 transition-colors"
         />
       </div>
-      <FiltersFilter v-model="filterType" :options="TYPE_OPTIONS" placeholder="All types" />
-      <FiltersFilter v-model="filterMood" :options="MOOD_OPTIONS" placeholder="All moods">
+      <FiltersFilter v-model="filterType" :options="LOG_TYPE_OPTIONS" placeholder="All types" />
+      <FiltersFilter v-model="filterMood" :options="LOG_MOOD_OPTIONS" placeholder="All moods">
         <template #option="{ option, isActive }">
           <span class="flex items-center gap-2">
             <UIcon v-if="option.value" :name="moodIcon(option.value)" :class="['w-3.5 h-3.5', moodIconColor(option.value)]" />
@@ -80,7 +80,7 @@
 
 <script setup lang="ts">
 import { formatDate } from '~/composables/useFormatDate'
-import { TYPE_OPTIONS, MOOD_OPTIONS } from '~/composables/useEntryHelpers'
+import { LOG_TYPE_OPTIONS, LOG_MOOD_OPTIONS } from '~/composables/useEntryHelpers'
 
 const { entryIcon, typeLabel, typeIconColor, moodIcon, moodIconColor } = useEntryHelpers()
 

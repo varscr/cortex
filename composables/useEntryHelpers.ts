@@ -29,12 +29,12 @@ const TYPE_BADGE_CLASS: Record<string, string> = {
   therapy: 'bg-blue-950 text-blue-300',
 }
 
-export const MOOD_OPTIONS = [
+export const LOG_MOOD_OPTIONS = [
   { label: 'All moods', value: '' },
   ...MOODS.map(m => ({ label: m.label, value: m.value })),
 ]
 
-export const TYPE_OPTIONS = [
+export const LOG_TYPE_OPTIONS = [
   { label: 'All types', value: '' },
   ...Object.entries(ENTRY_CONFIG).map(([value, cfg]) => ({ label: cfg.label, value })),
 ]
