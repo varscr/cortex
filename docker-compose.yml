@@ -6,15 +6,15 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-cortex}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: cortex_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d
       - ./db/backups:/backups
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cortex}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -38,10 +38,12 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-cortex}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/cortex_db
-      BINGX_API_KEY: ${BINGX_API_KEY:-}
-      BINGX_SECRET_KEY: ${BINGX_SECRET_KEY:-}
-      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/cortex_db
+      BINGX_API_KEY: ${BINGX_API_KEY}
+      BINGX_SECRET_KEY: ${BINGX_SECRET_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AUTH_SECRET: ${AUTH_SECRET}
+      AUTH_URL: ${AUTH_URL}
       NUXT_PUBLIC_APP_NAME: "Cortex"
     depends_on:
       postgres:
@@ -59,8 +61,8 @@ services:
     restart: unless-stopped
     environment:
       PGHOST: postgres
-      PGUSER: ${POSTGRES_USER:-cortex}
-      PGPASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - ./db/backups:/backups
     depends_on:
