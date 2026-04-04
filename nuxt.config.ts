@@ -3,7 +3,12 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
   modules: ['@nuxt/ui', '@nuxtjs/google-fonts'],
   imports: {
-    dirs: ['composables/*/*.ts'],
+    dirs: ['composables', 'composables/*/*.ts'],
+  },
+  runtimeConfig: {
+    public: {
+      authUrl: process.env.AUTH_URL,
+    }
   },
   components: [
     {
@@ -13,6 +18,9 @@ export default defineNuxtConfig({
   ],
   colorMode: {
     preference: 'dark'
+  },
+  build: {
+    transpile: ['better-auth'],
   },
   css: ['~/assets/css/main.css'],
   googleFonts: {
