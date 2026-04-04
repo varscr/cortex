@@ -187,9 +187,16 @@ Create a `.toml` file in `agents/` with `name`, `description`, and `[model]` sec
 - Dependency: `smol-toml` (TOML parser)
 - Docker: Claude CLI installed in container, host `~/.claude` mounted read-only
 
+## Auth
+- Better Auth library (`better-auth`) — manages `user`, `session`, `account`, `verification` tables
+- Better Auth requires **camelCase** column names (`emailVerified`, `userId`, `createdAt`, etc.) — do not use snake_case for auth tables
+- Auth config in `server/utils/auth.ts`, client in `composables/useAuth.ts`
+- Seed admin: `docker compose exec cortex bun run scripts/seed-admin.ts <email> <password> [name]`
+
 ## Database Schema
 - Schema in `db/init/01-core.sql` — runs automatically on first `docker compose up`
 - Agent schema in `db/init/02-agent.sql` — `knowledge_entries` + `agent_runs` tables
+- Auth schema in `db/init/05-auth.sql` — Better Auth tables (camelCase) + `user_id` columns on app tables
 - Schema changes: edit existing file (all `IF NOT EXISTS`) or add a new numbered file
 
 ## Do NOT
