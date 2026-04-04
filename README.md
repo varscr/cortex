@@ -5,7 +5,6 @@ Personal command center and second brain — built with Nuxt 3, PostgreSQL, and 
 ## Features
 
 - **Log** — journal entries, decisions, market notes with tagging and mood tracking
-- **Trading** — BingX copy trading dashboard with sync, snapshots, and P&L tracking
 - **Finances** — accounts, transactions, and monthly summaries
 - **Kanban** — boards with drag-and-drop columns and cards
 - **Profile** — about, education, experience, skills, projects, goals, links
@@ -37,8 +36,6 @@ That's it. The database schema is applied automatically on first start.
 | `POSTGRES_USER` | Yes | Database username (default: `cortex`) |
 | `POSTGRES_PASSWORD` | Yes | Database password |
 | `OPENAI_API_KEY` | No | Enables semantic search embeddings |
-| `BINGX_API_KEY` | No | BingX trading API integration |
-| `BINGX_SECRET_KEY` | No | BingX trading API secret |
 
 ## Services
 

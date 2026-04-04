@@ -39,8 +39,6 @@ services:
       - "3000:3000"
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/cortex_db
-      BINGX_API_KEY: ${BINGX_API_KEY}
-      BINGX_SECRET_KEY: ${BINGX_SECRET_KEY}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       AUTH_SECRET: ${AUTH_SECRET}
       AUTH_URL: ${AUTH_URL}
