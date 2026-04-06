@@ -1,9 +1,10 @@
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
   const id = getRouterParam(event, 'id')
 
   const result = await db.query(
-    'DELETE FROM chat_sessions WHERE id = $1 RETURNING id',
-    [id],
+    'DELETE FROM chat_sessions WHERE id = $1 AND user_id = $2 RETURNING id',
+    [id, user.id],
   )
 
   if (result.rows.length === 0) {

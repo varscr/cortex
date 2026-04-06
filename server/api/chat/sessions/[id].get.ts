@@ -1,8 +1,9 @@
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
   const id = getRouterParam(event, 'id')
 
   const [sessionResult, messagesResult] = await Promise.all([
-    db.query('SELECT * FROM chat_sessions WHERE id = $1', [id]),
+    db.query('SELECT * FROM chat_sessions WHERE id = $1 AND user_id = $2', [id, user.id]),
     db.query('SELECT * FROM chat_messages WHERE session_id = $1 ORDER BY created_at ASC', [id]),
   ])
 

@@ -4,6 +4,7 @@ import { createDriver } from '../../utils/llm/driver-factory'
 import { buildChatContext } from '../../utils/chat/rag'
 
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
   const body = await readBody(event)
   const { data, error } = validateMessageInput(body)
 
@@ -14,15 +15,15 @@ export default defineEventHandler(async (event) => {
   // 1. Get or create session
   let session: ChatSessionRow
   if (data.sessionId) {
-    const r = await db.query('SELECT * FROM chat_sessions WHERE id = $1', [data.sessionId])
+    const r = await db.query('SELECT * FROM chat_sessions WHERE id = $1 AND user_id = $2', [data.sessionId, user.id])
     if (r.rows.length === 0) throw createError({ statusCode: 404, statusMessage: 'Session not found' })
     session = r.rows[0]
   } else {
     const provider = data.provider ?? DEFAULT_PROVIDER
     const model = data.model ?? DEFAULT_MODEL
     const r = await db.query(
-      'INSERT INTO chat_sessions (model_provider, model_name) VALUES ($1, $2) RETURNING *',
-      [provider, model],
+      'INSERT INTO chat_sessions (user_id, model_provider, model_name) VALUES ($1, $2, $3) RETURNING *',
+      [user.id, provider, model],
     )
     session = r.rows[0]
   }
@@ -34,7 +35,7 @@ export default defineEventHandler(async (event) => {
   )
 
   // 3. Build RAG context
-  const { contextText, sources } = await buildChatContext(data.content)
+  const { contextText, sources } = await buildChatContext(data.content, user.id)
 
   // 4. Load conversation history (last 20 messages)
   const historyResult = await db.query(
@@ -85,12 +86,12 @@ export default defineEventHandler(async (event) => {
   // 8. Auto-title on first message (fire-and-forget)
   if (!session.title) {
     const title = data.content.slice(0, 60).trim()
-    db.query('UPDATE chat_sessions SET title = $1, updated_at = NOW() WHERE id = $2', [title, session.id])
+    db.query('UPDATE chat_sessions SET title = $1, updated_at = NOW() WHERE id = $2 AND user_id = $3', [title, session.id, user.id])
       .catch(err => console.error('[chat] auto-title failed', session.id, err))
   }
 
   // 9. Refresh session for response
-  const updatedSession = await db.query('SELECT * FROM chat_sessions WHERE id = $1', [session.id])
+  const updatedSession = await db.query('SELECT * FROM chat_sessions WHERE id = $1 AND user_id = $2', [session.id, user.id])
 
   return {
     message: toChatMessage(msgResult.rows[0]),

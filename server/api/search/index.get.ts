@@ -1,5 +1,6 @@
 export default defineEventHandler(async (event) => {
   const { q, sourceTypes: rawSourceTypes, limit: rawLimit } = getQuery(event)
+  const user = event.context.user
 
   if (!q || !String(q).trim()) {
     throw createError({ statusCode: 400, statusMessage: 'q is required' })
@@ -11,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
   const limit = Math.min(parseInt(String(rawLimit ?? '10')) || 10, 100)
 
-  const results = await searchDocuments(String(q).trim(), { sourceTypes, limit })
+  const results = await searchDocuments(String(q).trim(), user.id, { sourceTypes, limit })
 
   return { results, total: results.length, query: q }
 })

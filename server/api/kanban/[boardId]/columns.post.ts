@@ -1,5 +1,6 @@
 export default defineEventHandler(async (event) => {
   const boardId = getRouterParam(event, 'boardId')
+  const user = event.context.user
   const body = await readBody(event)
   const { data, error } = validateColumnInput(body)
 
@@ -7,10 +8,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: error })
   }
 
-  // Verify board exists
+  // Verify board exists and belongs to user
   const boardResult = await db.query(
-    'SELECT id FROM kanban_boards WHERE id = $1',
-    [boardId]
+    'SELECT id FROM kanban_boards WHERE id = $1 AND user_id = $2',
+    [boardId, user.id]
   )
 
   if (boardResult.rows.length === 0) {

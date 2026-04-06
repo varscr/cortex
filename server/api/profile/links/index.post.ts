@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
   const body = await readBody(event)
   const { data, error } = validateLinkInput(body)
 
@@ -7,10 +8,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const result = await db.query(
-    `INSERT INTO profile_links (label, url, icon, position)
-     VALUES ($1, $2, $3, $4)
+    `INSERT INTO profile_links (user_id, label, url, icon, position)
+     VALUES ($1, $2, $3, $4, $5)
      RETURNING *`,
-    [data.label, data.url, data.icon, data.position],
+    [user.id, data.label, data.url, data.icon, data.position],
   )
 
   setResponseStatus(event, 201)

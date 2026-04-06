@@ -1,10 +1,10 @@
-export async function buildChatContext(userMessage: string): Promise<{
+export async function buildChatContext(userMessage: string, userId: string): Promise<{
   contextText: string
   sources: ChatSource[]
 }> {
   const [searchResults, profile] = await Promise.all([
-    searchDocuments(userMessage, { limit: 8 }).catch(() => [] as SearchResult[]),
-    db.query('SELECT headline, bio, job_title, status FROM profile_about LIMIT 1').catch(() => ({ rows: [] })),
+    searchDocuments(userMessage, userId, { limit: 8 }).catch(() => [] as SearchResult[]),
+    db.query('SELECT headline, bio, job_title, status FROM profile_about WHERE user_id = $1 LIMIT 1', [userId]).catch(() => ({ rows: [] })),
   ])
 
   const sources: ChatSource[] = searchResults.map(r => ({

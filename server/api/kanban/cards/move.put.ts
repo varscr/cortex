@@ -1,5 +1,6 @@
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
+  const user = event.context.user
   const { data, error } = validateCardMoveInput(body)
 
   if (error || !data) {
@@ -10,10 +11,13 @@ export default defineEventHandler(async (event) => {
   try {
     await client.query('BEGIN')
 
-    // Get current card
+    // Get current card and verify board ownership
     const cardResult = await client.query(
-      'SELECT * FROM kanban_cards WHERE id = $1',
-      [data.cardId]
+      `SELECT kc.* FROM kanban_cards kc
+       JOIN kanban_columns kcol ON kc.column_id = kcol.id
+       JOIN kanban_boards kb ON kcol.board_id = kb.id
+       WHERE kc.id = $1 AND kb.user_id = $2`,
+      [data.cardId, user.id]
     )
 
     if (cardResult.rows.length === 0) {
@@ -23,10 +27,12 @@ export default defineEventHandler(async (event) => {
 
     const card = cardResult.rows[0]
 
-    // Verify target column exists
+    // Verify target column exists and belongs to user's board
     const colResult = await client.query(
-      'SELECT id FROM kanban_columns WHERE id = $1',
-      [data.targetColumnId]
+      `SELECT kcol.id FROM kanban_columns kcol
+       JOIN kanban_boards kb ON kcol.board_id = kb.id
+       WHERE kcol.id = $1 AND kb.user_id = $2`,
+      [data.targetColumnId, user.id]
     )
 
     if (colResult.rows.length === 0) {

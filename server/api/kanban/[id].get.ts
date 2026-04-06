@@ -1,9 +1,10 @@
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
+  const user = event.context.user
 
   const boardResult = await db.query(
-    'SELECT * FROM kanban_boards WHERE id = $1',
-    [id]
+    'SELECT * FROM kanban_boards WHERE id = $1 AND user_id = $2',
+    [id, user.id]
   )
 
   if (boardResult.rows.length === 0) {

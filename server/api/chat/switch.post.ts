@@ -2,6 +2,7 @@ import { buildSystemPrompt } from '../../utils/chat/context'
 import { loadAgentConfig } from '../../utils/agents/loader'
 
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
   const body = await readBody(event)
   const { sessionId, newProvider, newModel, pendingMessage } = body
 
@@ -10,24 +11,24 @@ export default defineEventHandler(async (event) => {
   }
 
   // 1. Get current session
-  const currentSession = await db.query('SELECT * FROM chat_sessions WHERE id = $1', [sessionId])
+  const currentSession = await db.query('SELECT * FROM chat_sessions WHERE id = $1 AND user_id = $2', [sessionId, user.id])
   if (currentSession.rows.length === 0) {
     throw createError({ statusCode: 404, statusMessage: 'Session not found' })
   }
 
   // 2. Update session with new provider/model (keep same session)
   await db.query(
-    'UPDATE chat_sessions SET model_provider = $1, model_name = $2, updated_at = NOW() WHERE id = $3',
-    [newProvider, newModel, sessionId]
+    'UPDATE chat_sessions SET model_provider = $1, model_name = $2, updated_at = NOW() WHERE id = $3 AND user_id = $4',
+    [newProvider, newModel, sessionId, user.id]
   )
 
   // 3. Get updated session
-  const updatedSession = await db.query('SELECT * FROM chat_sessions WHERE id = $1', [sessionId])
+  const updatedSession = await db.query('SELECT * FROM chat_sessions WHERE id = $1 AND user_id = $2', [sessionId, user.id])
 
   // 4. If there's a pending message, send it to the new LLM
   if (pendingMessage) {
     // Build RAG context
-    const { contextText, sources } = await buildChatContext(pendingMessage)
+    const { contextText, sources } = await buildChatContext(pendingMessage, user.id)
 
     // Load agent config with new provider/model
     const config = await loadAgentConfig('chat', {

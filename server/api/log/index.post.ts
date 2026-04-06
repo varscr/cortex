@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
   const body = await readBody(event)
   const { data, error } = validateLogInput(body)
 
@@ -7,13 +8,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const result = await db.query(
-    `INSERT INTO log_entries (title, content, tags, mood, entry_type, is_pinned, date)
-     VALUES ($1, $2, $3, $4, $5, COALESCE($6, false), COALESCE($7::date, CURRENT_DATE))
+    `INSERT INTO log_entries (user_id, title, content, tags, mood, entry_type, is_pinned, date)
+     VALUES ($1, $2, $3, $4, $5, $6, COALESCE($7, false), COALESCE($8::date, CURRENT_DATE))
      RETURNING *`,
-    [data.title, data.content, data.tags, data.mood, data.entryType, data.isPinned ?? null, data.date ?? null]
+    [user.id, data.title, data.content, data.tags, data.mood, data.entryType, data.isPinned ?? null, data.date ?? null]
   )
 
-  upsertLogEmbedding(result.rows[0])
+  upsertLogEmbedding(result.rows[0], user.id)
     .catch(err => console.error('[embed] failed for log', result.rows[0].id, err))
 
   setResponseStatus(event, 201)

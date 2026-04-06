@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
   const id = getRouterParam(event, 'id')
   const body = await readBody(event)
   const { data, error } = validateLogInput(body)
@@ -12,16 +13,16 @@ export default defineEventHandler(async (event) => {
      SET title = $1, content = $2, tags = $3, mood = $4, entry_type = $5,
          is_pinned = COALESCE($6, is_pinned),
          date = COALESCE($7::date, date), updated_at = NOW()
-     WHERE id = $8
+     WHERE id = $8 AND user_id = $9
      RETURNING *`,
-    [data.title, data.content, data.tags, data.mood, data.entryType, data.isPinned ?? null, data.date ?? null, id]
+    [data.title, data.content, data.tags, data.mood, data.entryType, data.isPinned ?? null, data.date ?? null, id, user.id]
   )
 
   if (result.rows.length === 0) {
     throw createError({ statusCode: 404, statusMessage: 'Entry not found' })
   }
 
-  upsertLogEmbedding(result.rows[0])
+  upsertLogEmbedding(result.rows[0], user.id)
     .catch(err => console.error('[embed] failed for log', result.rows[0].id, err))
 
   return toLogEntry(result.rows[0])

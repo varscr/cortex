@@ -37,27 +37,29 @@ export async function upsertDocument(
   source: string,
   sourceType: string,
   content: string,
-  metadata: Record<string, unknown>
+  metadata: Record<string, unknown>,
+  userId: string
 ): Promise<void> {
   if (!isEnabled()) return
 
   const embedding = await embedText(content)
   const embeddingStr = `[${embedding.join(',')}]`
 
-  await db.query('DELETE FROM documents WHERE source = $1', [source])
+  await db.query('DELETE FROM documents WHERE source = $1 AND user_id = $2', [source, userId])
   await db.query(
-    `INSERT INTO documents (content, embedding, source, source_type, chunk_index, metadata)
-     VALUES ($1, $2::vector, $3, $4, 0, $5)`,
-    [content, embeddingStr, source, sourceType, JSON.stringify(metadata)]
+    `INSERT INTO documents (content, embedding, source, source_type, chunk_index, metadata, user_id)
+     VALUES ($1, $2::vector, $3, $4, 0, $5, $6)`,
+    [content, embeddingStr, source, sourceType, JSON.stringify(metadata), userId]
   )
 }
 
-export async function deleteDocument(source: string): Promise<void> {
-  await db.query('DELETE FROM documents WHERE source = $1', [source])
+export async function deleteDocument(source: string, userId: string): Promise<void> {
+  await db.query('DELETE FROM documents WHERE source = $1 AND user_id = $2', [source, userId])
 }
 
 export async function searchDocuments(
   query: string,
+  userId: string,
   opts?: { sourceTypes?: string[]; limit?: number }
 ): Promise<SearchResult[]> {
   if (!isEnabled()) return []
@@ -72,10 +74,11 @@ export async function searchDocuments(
             1 - (embedding <=> $1::vector) AS similarity
      FROM documents
      WHERE embedding IS NOT NULL
+       AND user_id = $4
        AND ($2::text[] IS NULL OR source_type = ANY($2::text[]))
      ORDER BY embedding <=> $1::vector
      LIMIT $3`,
-    [embeddingStr, sourceTypes, limit]
+    [embeddingStr, sourceTypes, limit, userId]
   )
 
   return result.rows.map((row) => ({

@@ -1,10 +1,14 @@
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
+  const user = event.context.user
 
-  // Get card to know column_id and position for recompacting
+  // Get card to know column_id and position for recompacting, and verify board ownership
   const cardResult = await db.query(
-    'SELECT * FROM kanban_cards WHERE id = $1',
-    [id]
+    `SELECT kc.* FROM kanban_cards kc
+     JOIN kanban_columns kcol ON kc.column_id = kcol.id
+     JOIN kanban_boards kb ON kcol.board_id = kb.id
+     WHERE kc.id = $1 AND kb.user_id = $2`,
+    [id, user.id]
   )
 
   if (cardResult.rows.length === 0) {

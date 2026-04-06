@@ -1,13 +1,14 @@
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
+  const user = event.context.user
 
   const result = await db.query(
     `SELECT s.*, a.name as account_name, a.institution,
        (SELECT COUNT(*) FROM finance_transactions t WHERE t.statement_id = s.id) as transaction_count
      FROM finance_statements s
      JOIN finance_accounts a ON a.id = s.account_id
-     WHERE s.id = $1`,
-    [id],
+     WHERE s.id = $1 AND a.user_id = $2`,
+    [id, user.id],
   )
 
   if (result.rows.length === 0) {

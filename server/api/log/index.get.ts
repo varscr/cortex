@@ -1,9 +1,10 @@
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
   const query = getQuery(event)
 
-  const conditions: string[] = []
-  const params: any[] = []
-  let paramIndex = 1
+  const conditions: string[] = [`user_id = $1`]
+  const params: any[] = [user.id]
+  let paramIndex = 2
 
   if (query.type) {
     conditions.push(`entry_type = $${paramIndex++}`)

@@ -8,16 +8,16 @@ function buildEmbedText(row: LogEntryRow): string {
   return text
 }
 
-export async function upsertLogEmbedding(row: LogEntryRow): Promise<void> {
+export async function upsertLogEmbedding(row: LogEntryRow, userId: string): Promise<void> {
   await upsertDocument(`log/${row.id}`, 'log', buildEmbedText(row), {
     title: row.title,
     entryType: row.entry_type,
     mood: row.mood,
     tags: row.tags ?? [],
     date: row.date,
-  })
+  }, userId)
 }
 
-export async function deleteLogEmbedding(logId: number): Promise<void> {
-  await deleteDocument(`log/${logId}`)
+export async function deleteLogEmbedding(logId: number, userId: string): Promise<void> {
+  await deleteDocument(`log/${logId}`, userId)
 }

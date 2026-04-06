@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
   const id = getRouterParam(event, 'id')
   const body = await readBody(event)
   const { data, error } = validateLinkInput(body)
@@ -10,9 +11,9 @@ export default defineEventHandler(async (event) => {
   const result = await db.query(
     `UPDATE profile_links
      SET label = $1, url = $2, icon = $3, position = $4, updated_at = NOW()
-     WHERE id = $5
+     WHERE id = $5 AND user_id = $6
      RETURNING *`,
-    [data.label, data.url, data.icon, data.position, id],
+    [data.label, data.url, data.icon, data.position, id, user.id],
   )
 
   if (result.rows.length === 0) {

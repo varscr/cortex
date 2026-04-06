@@ -6,15 +6,15 @@ function buildEmbedText(row: KnowledgeEntryRow): string {
   return text
 }
 
-export async function upsertKnowledgeEmbedding(row: KnowledgeEntryRow): Promise<void> {
+export async function upsertKnowledgeEmbedding(row: KnowledgeEntryRow, userId: string): Promise<void> {
   await upsertDocument(`knowledge/${row.id}`, 'knowledge', buildEmbedText(row), {
     title: row.title,
     category: row.category,
     tags: row.tags ?? [],
     confidence: row.confidence,
-  })
+  }, userId)
 }
 
-export async function deleteKnowledgeEmbedding(knowledgeId: number): Promise<void> {
-  await deleteDocument(`knowledge/${knowledgeId}`)
+export async function deleteKnowledgeEmbedding(knowledgeId: number, userId: string): Promise<void> {
+  await deleteDocument(`knowledge/${knowledgeId}`, userId)
 }

@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
   const id = getRouterParam(event, 'id')
   const body = await readBody(event)
 
@@ -7,8 +8,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const result = await db.query(
-    'UPDATE chat_sessions SET title = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
-    [body.title.trim(), id],
+    'UPDATE chat_sessions SET title = $1, updated_at = NOW() WHERE id = $2 AND user_id = $3 RETURNING *',
+    [body.title.trim(), id, user.id],
   )
 
   if (result.rows.length === 0) {

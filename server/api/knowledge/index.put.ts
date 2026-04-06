@@ -1,4 +1,9 @@
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
+  if (!user?.id) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+  }
+
   const body = await readBody(event)
   const { ids, isReviewed } = body
 
@@ -11,13 +16,13 @@ export default defineEventHandler(async (event) => {
   const result = await db.query(
     `UPDATE knowledge_entries
      SET is_reviewed = $1, updated_at = NOW()
-     WHERE id = ANY($2::int[])
+     WHERE id = ANY($2::int[]) AND user_id = $3
      RETURNING *`,
-    [isReviewed, ids]
+    [isReviewed, ids, user.id]
   )
 
   for (const row of result.rows) {
-    upsertKnowledgeEmbedding(row)
+    upsertKnowledgeEmbedding(row, user.id)
       .catch(err => console.error('[embed] failed for knowledge', row.id, err))
   }
 

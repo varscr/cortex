@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
   const query = getQuery(event)
   const months = parseInt(query.months as string) || 1
   const accountId = query.accountId ? parseInt(query.accountId as string) : null
@@ -7,19 +8,20 @@ export default defineEventHandler(async (event) => {
   dateFrom.setMonth(dateFrom.getMonth() - months)
   const dateFromStr = dateFrom.toISOString().split('T')[0]
 
-  const accountFilter = accountId ? 'AND account_id = $2' : ''
-  const params: any[] = [dateFromStr]
+  const accountFilter = accountId ? 'AND t.account_id = $3' : ''
+  const params: any[] = [dateFromStr, user.id]
   if (accountId) params.push(accountId)
 
   // Summary totals
   const summaryResult = await db.query(
     `SELECT
-       COALESCE(SUM(CASE WHEN amount > 0 THEN amount ELSE 0 END), 0) as total_income,
-       COALESCE(SUM(CASE WHEN amount < 0 THEN ABS(amount) ELSE 0 END), 0) as total_expenses,
-       COALESCE(SUM(amount), 0) as net_flow,
+       COALESCE(SUM(CASE WHEN t.amount > 0 THEN t.amount ELSE 0 END), 0) as total_income,
+       COALESCE(SUM(CASE WHEN t.amount < 0 THEN ABS(t.amount) ELSE 0 END), 0) as total_expenses,
+       COALESCE(SUM(t.amount), 0) as net_flow,
        COUNT(*) as transaction_count
-     FROM finance_transactions
-     WHERE date >= $1 ${accountFilter}`,
+     FROM finance_transactions t
+     JOIN finance_accounts a ON a.id = t.account_id
+     WHERE t.date >= $1 AND a.user_id = $2 ${accountFilter}`,
     params,
   )
 
@@ -27,10 +29,11 @@ export default defineEventHandler(async (event) => {
 
   // Top categories by spending
   const categoriesResult = await db.query(
-    `SELECT category, SUM(ABS(amount)) as total, COUNT(*) as count
-     FROM finance_transactions
-     WHERE date >= $1 AND amount < 0 ${accountFilter}
-     GROUP BY category
+    `SELECT t.category, SUM(ABS(t.amount)) as total, COUNT(*) as count
+     FROM finance_transactions t
+     JOIN finance_accounts a ON a.id = t.account_id
+     WHERE t.date >= $1 AND a.user_id = $2 AND t.amount < 0 ${accountFilter}
+     GROUP BY t.category
      ORDER BY total DESC
      LIMIT 10`,
     params,
@@ -44,7 +47,7 @@ export default defineEventHandler(async (event) => {
        COALESCE(SUM(CASE WHEN t.amount < 0 THEN ABS(t.amount) ELSE 0 END), 0) as expenses
      FROM finance_transactions t
      JOIN finance_accounts a ON a.id = t.account_id
-     WHERE t.date >= $1 ${accountFilter}
+     WHERE t.date >= $1 AND a.user_id = $2 ${accountFilter}
      GROUP BY t.account_id, a.name
      ORDER BY a.name`,
     params,

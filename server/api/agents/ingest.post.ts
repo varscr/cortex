@@ -30,7 +30,12 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const runId = await runKnowledgeIngest(body)
+  const user = event.context.user
+  if (!user) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+  }
+
+  const runId = await runKnowledgeIngest(body, user.id)
 
   setResponseStatus(event, 202)
   return { runId, status: 'running' }

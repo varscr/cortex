@@ -23,10 +23,12 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'accountId must be a number' })
   }
 
+  const user = event.context.user
+
   // Verify account exists
   const accountResult = await db.query(
-    'SELECT * FROM finance_accounts WHERE id = $1',
-    [accountId],
+    'SELECT * FROM finance_accounts WHERE id = $1 AND user_id = $2',
+    [accountId, user.id],
   )
   if (accountResult.rows.length === 0) {
     throw createError({ statusCode: 404, statusMessage: 'Account not found' })

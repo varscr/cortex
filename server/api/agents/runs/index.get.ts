@@ -1,9 +1,10 @@
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
+  const user = event.context.user
 
-  const conditions: string[] = []
-  const params: any[] = []
-  let paramIndex = 1
+  const conditions: string[] = ['user_id = $1']
+  const params: any[] = [user.id]
+  let paramIndex = 2
 
   if (query.agentName) {
     conditions.push(`agent_name = $${paramIndex++}`)
@@ -15,7 +16,7 @@ export default defineEventHandler(async (event) => {
     params.push(query.status)
   }
 
-  const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+  const where = `WHERE ${conditions.join(' AND ')}`
   const limit = Math.min(Number(query.limit) || 20, 100)
   const offset = Number(query.offset) || 0
 

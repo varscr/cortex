@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
   const body = await readBody(event)
   const { data, error } = validateGoalInput(body)
 
@@ -7,13 +8,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const result = await db.query(
-    `INSERT INTO profile_goals (title, description, status, target_date, category)
-     VALUES ($1, $2, $3, $4, $5)
+    `INSERT INTO profile_goals (user_id, title, description, status, target_date, category)
+     VALUES ($1, $2, $3, $4, $5, $6)
      RETURNING *`,
-    [data.title, data.description, data.status, data.targetDate, data.category],
+    [user.id, data.title, data.description, data.status, data.targetDate, data.category],
   )
 
-  upsertGoalEmbedding(result.rows[0])
+  upsertGoalEmbedding(result.rows[0], user.id)
     .catch(err => console.error('[embed] failed for profile/goal', result.rows[0].id, err))
 
   setResponseStatus(event, 201)

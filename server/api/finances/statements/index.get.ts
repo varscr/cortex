@@ -1,10 +1,11 @@
 export default defineEventHandler(async (event) => {
+  const user = event.context.user
   const query = getQuery(event)
   const limit = Math.min(parseInt(query.limit as string) || 20, 100)
   const offset = parseInt(query.offset as string) || 0
 
-  const conditions: string[] = []
-  const params: any[] = []
+  const conditions: string[] = ['a.user_id = $1']
+  const params: any[] = [user.id]
 
   if (query.accountId) {
     params.push(query.accountId)
@@ -15,10 +16,10 @@ export default defineEventHandler(async (event) => {
     conditions.push(`s.status = $${params.length}`)
   }
 
-  const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+  const where = `WHERE ${conditions.join(' AND ')}`
 
   const countResult = await db.query(
-    `SELECT COUNT(*) FROM finance_statements s ${where}`,
+    `SELECT COUNT(*) FROM finance_statements s JOIN finance_accounts a ON a.id = s.account_id ${where}`,
     params,
   )
 

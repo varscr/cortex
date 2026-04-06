@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+  const { user } = event.context
   const body = await readBody(event)
   const { data, error } = validateReferenceInput(body)
 
@@ -7,10 +8,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const result = await db.query(
-    `INSERT INTO profile_references (name, title, contact, notes)
-     VALUES ($1, $2, $3, $4)
+    `INSERT INTO profile_references (user_id, name, title, contact, notes)
+     VALUES ($1, $2, $3, $4, $5)
      RETURNING *`,
-    [data.name, data.title, data.contact, data.notes],
+    [user.id, data.name, data.title, data.contact, data.notes],
   )
 
   setResponseStatus(event, 201)
