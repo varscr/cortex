@@ -45,8 +45,13 @@ export function useChatApi(options: UseChatApiOptions = {}) {
       })
       options.onSendSuccess?.()
       return result
-    } catch {
-      toast.add({ title: 'Failed to send message', color: 'red' })
+    } catch (err: any) {
+      const responseData = err.response?._data
+      toast.add({ 
+        title: 'Failed to send message', 
+        description: responseData?.statusMessage || err.message,
+        color: 'red' 
+      })
       return null
     }
   }

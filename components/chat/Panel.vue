@@ -84,6 +84,7 @@ const { view, activeSessionId, selectedProvider, selectedModel, pendingSwitch, s
 const inputText = ref('')
 const sending = ref(false)
 const messagesEl = ref<HTMLElement | null>(null)
+const lastAttemptedMessage = ref('')
 
 const { data: providers } = useFetch<LlmProviderOption[]>('/api/chat/providers')
 
@@ -112,22 +113,17 @@ watch([selectedProvider, selectedModel], ([newProvider, newModel]) => {
   setPendingSwitch({ provider: newProvider, model: newModel })
 })
 
-const { data: _sessionData, refresh: refreshSession } = useAsyncData<ChatSessionDetail | null>(
-  () => (activeSessionId.value ? `session-${activeSessionId.value}` : 'no-session'),
-  () => {
-    if (!activeSessionId.value) return Promise.resolve(null)
-    return $fetch<ChatSessionDetail>(`/api/chat/sessions/${activeSessionId.value}`)
-  },
+const { data: sessionDetail, refresh: refreshSession } = useFetch<ChatSessionDetail>(
+  () => (activeSessionId.value ? `/api/chat/sessions/${activeSessionId.value}` : null),
   {
     watch: [activeSessionId],
   }
 )
-const sessionDetail = computed(() => _sessionData.value)
 
 const messages = computed(() => sessionDetail.value?.messages ?? [])
 
 const { data: sessions, refresh: refreshSessions } = useFetch<ChatSession[]>('/api/chat/sessions', {
-  immediate: false,
+  immediate: true,
 })
 
 const { createSession, deleteSession, sendMessage, switchProvider } = useChatApi({
@@ -198,6 +194,7 @@ async function handleSendMessage() {
   const content = inputText.value.trim()
   if (!content || sending.value) return
 
+  lastAttemptedMessage.value = content
   inputText.value = ''
   sending.value = true
 
@@ -210,6 +207,9 @@ async function handleSendMessage() {
 
   if (result && !activeSessionId.value) {
     setSessionId(result.session.id)
+    lastAttemptedMessage.value = ''
+  } else if (result) {
+    lastAttemptedMessage.value = ''
   }
 
   sending.value = false
