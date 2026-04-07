@@ -23,6 +23,7 @@
       @cancel-switch="handleCancelSwitch"
       @toggle-history="toggleView"
       @new-chat="handleNewChat"
+      @update-title="handleUpdateTitle"
       @close="toggle"
     />
 
@@ -39,7 +40,7 @@
     <!-- Chat view -->
     <template v-else>
       <!-- Empty state / New Chat prompt -->
-      <div v-if="!messages.length && !sending" class="flex-1 flex flex-col items-center justify-center text-center px-6 gap-4">
+      <div v-if="!messages.length && !isCurrentSessionSending" class="flex-1 flex flex-col items-center justify-center text-center px-6 gap-4">
         <UIcon name="i-heroicons-chat-bubble-left-right" class="w-10 h-10 text-zinc-700" />
         <div>
           <p class="text-sm text-zinc-400 font-medium mb-1">Ask anything</p>
@@ -57,7 +58,7 @@
           :sources="msg.sources"
         />
 
-        <div v-if="sending" class="flex justify-start">
+        <div v-if="isCurrentSessionSending" class="flex justify-start">
           <div class="linear-panel rounded-xl px-3 py-2.5 flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce [animation-delay:0ms]" />
             <span class="w-1.5 h-1.5 bg-zinc-500 rounded-full animate-bounce [animation-delay:150ms]" />
@@ -69,7 +70,7 @@
       <!-- Input -->
       <ChatInput
         v-model="inputText"
-        :disabled="sending"
+        :disabled="isCurrentSessionSending"
         @send="handleSendMessage"
       />
     </template>
@@ -81,8 +82,23 @@ const { isOpen, width, toggle, initWidth, saveWidth, MIN_WIDTH, MAX_WIDTH } = us
 
 const { view, activeSessionId, selectedProvider, selectedModel, pendingSwitch, setSessionId, setProvider, setModel, setView, setPendingSwitch } = useChatState()
 
+interface ChatSessionDetail {
+  id: number
+  title: string | null
+  modelProvider: string
+  modelName: string
+  createdAt: string
+  messages: any[]
+}
+
 const inputText = ref('')
-const sending = ref(false)
+const sendingSessionId = ref<number | null>(null) // null, or -1 for new chat, or sessionId
+const isCurrentSessionSending = computed(() => {
+  if (sendingSessionId.value === null) return false
+  if (sendingSessionId.value === -1 && activeSessionId.value === null) return true
+  return sendingSessionId.value === activeSessionId.value
+})
+
 const messagesEl = ref<HTMLElement | null>(null)
 const lastAttemptedMessage = ref('')
 
@@ -126,14 +142,26 @@ const { data: sessions, refresh: refreshSessions } = useFetch<ChatSession[]>('/a
   immediate: true,
 })
 
-const { createSession, deleteSession, sendMessage, switchProvider } = useChatApi({
+const { createSession, deleteSession, sendMessage, switchProvider, updateSessionTitle } = useChatApi({
   onSendSuccess: () => refreshSession(),
-  onDeleteSuccess: () => refreshSessions(),
+  onDeleteSuccess: () => {
+    refreshSessions()
+    refreshSession()
+  },
 })
 
 onMounted(() => {
   initWidth()
 })
+
+async function handleUpdateTitle(newTitle: string) {
+  if (!activeSessionId.value) return
+  const result = await updateSessionTitle(activeSessionId.value, newTitle)
+  if (result) {
+    await refreshSession()
+    await refreshSessions()
+  }
+}
 
 
 function startResize(e: MouseEvent) {
@@ -192,11 +220,11 @@ async function handleDeleteSession(id: number) {
 
 async function handleSendMessage() {
   const content = inputText.value.trim()
-  if (!content || sending.value) return
+  if (!content || isCurrentSessionSending.value) return
 
   lastAttemptedMessage.value = content
   inputText.value = ''
-  sending.value = true
+  sendingSessionId.value = activeSessionId.value ?? -1
 
   const result = await sendMessage(
     content,
@@ -212,7 +240,7 @@ async function handleSendMessage() {
     lastAttemptedMessage.value = ''
   }
 
-  sending.value = false
+  sendingSessionId.value = null
   await refreshSession()
   scrollToBottom()
 }
@@ -221,7 +249,7 @@ async function handleConfirmSwitch() {
   if (!pendingSwitch.value || !activeSessionId.value) return
 
   const currentContent = inputText.value.trim()
-  sending.value = true
+  sendingSessionId.value = activeSessionId.value
 
   const result = await switchProvider(
     activeSessionId.value,
@@ -241,7 +269,7 @@ async function handleConfirmSwitch() {
   }
 
   setPendingSwitch(null)
-  sending.value = false
+  sendingSessionId.value = null
 }
 
 function handleCancelSwitch() {

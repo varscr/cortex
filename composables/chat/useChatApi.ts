@@ -98,10 +98,25 @@ export function useChatApi(options: UseChatApiOptions = {}) {
     }
   }
 
+  async function updateSessionTitle(id: number, title: string): Promise<ChatSession | null> {
+    try {
+      const session = await $fetch<ChatSession>(`/api/chat/sessions/${id}`, {
+        method: 'PATCH',
+        body: { title },
+      })
+      options.onSendSuccess?.() // This usually refreshes the detail/list
+      return session
+    } catch {
+      toast.add({ title: 'Failed to update title', color: 'red' })
+      return null
+    }
+  }
+
   return {
     sendMessage,
     createSession,
     deleteSession,
     switchProvider,
+    updateSessionTitle,
   }
 }

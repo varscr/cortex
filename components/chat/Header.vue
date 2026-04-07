@@ -1,17 +1,48 @@
 <template>
   <div class="min-h-[64px] py-2 flex items-center gap-2 px-4 border-b border-white/5 flex-shrink-0">
-    <div class="flex-1 min-w-0">
-      <p class="text-base font-medium text-zinc-200 truncate">
-        {{ title }}
-      </p>
-      <div class="flex items-center gap-1.5 mt-1">
+    <div class="flex-1 min-w-0 flex flex-col justify-center">
+      <!-- Title Section -->
+      <div 
+        class="group inline-flex items-center gap-2 px-1.5 -ml-1.5 rounded-md hover:bg-white/[0.05] transition-colors cursor-pointer w-fit max-w-full mb-2"
+        @click="startEditing"
+      >
+        <template v-if="!isEditing">
+          <p class="text-base font-medium text-zinc-200 truncate">
+            {{ title }}
+          </p>
+          <UIcon 
+            name="i-heroicons-pencil" 
+            class="w-3.5 h-3.5 text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+          />
+        </template>
+        
+        <UInput
+          v-else
+          ref="titleInput"
+          v-model="editTitle"
+          variant="none"
+          size="md"
+          autofocus
+          class="w-full"
+          :ui="{ 
+            base: 'bg-transparent border-0 ring-1 ring-blue-500/30 rounded-md px-1 text-base font-medium text-zinc-100 min-w-[120px]',
+          }"
+          @click.stop
+          @blur="stopEditing"
+          @keyup.enter="handleSave"
+          @keyup.esc="stopEditing"
+        />
+      </div>
+
+      <!-- Filters -->
+      <div class="flex items-center gap-3">
         <FiltersFilter
           :model-value="provider"
           :options="providerOptions"
           placeholder="Provider"
           icon="i-heroicons-globe-alt"
           icon-class="text-zinc-600"
-          button-class="bg-transparent text-zinc-500 hover:text-zinc-300 text-xs px-2 py-1 border-0 hover:bg-white/5"
+          button-class="bg-transparent text-zinc-500 hover:text-zinc-300 text-xs p-0 border-0 hover:bg-transparent"
           text-class="truncate"
           menu-class="w-36"
           @update:model-value="$emit('update:provider', $event)"
@@ -22,7 +53,7 @@
           placeholder="Model"
           icon="i-heroicons-cpu-chip"
           icon-class="text-zinc-600"
-          button-class="bg-transparent text-zinc-500 hover:text-zinc-300 text-xs px-2 py-1 border-0 hover:bg-white/5"
+          button-class="bg-transparent text-zinc-500 hover:text-zinc-300 text-xs p-0 border-0 hover:bg-transparent"
           text-class="truncate"
           menu-class="w-44"
           @update:model-value="$emit('update:model', $event)"
@@ -65,7 +96,7 @@ interface ProviderOption {
   value: string
 }
 
-defineProps<{
+const props = defineProps<{
   title: string
   provider: string
   model: string
@@ -75,13 +106,37 @@ defineProps<{
   showHistory: boolean
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   'update:provider': [value: string]
   'update:model': [value: string]
+  'update-title': [value: string]
   'confirm-switch': []
   'cancel-switch': []
   'toggle-history': []
   'new-chat': []
   'close': []
 }>()
+
+const isEditing = ref(false)
+const editTitle = ref('')
+const titleInput = ref<any>(null)
+
+function startEditing() {
+  if (isEditing.value) return
+  editTitle.value = props.title
+  isEditing.value = true
+}
+
+function stopEditing() {
+  isEditing.value = false
+}
+
+function handleSave() {
+  if (!editTitle.value.trim() || editTitle.value === props.title) {
+    stopEditing()
+    return
+  }
+  emit('update-title', editTitle.value.trim())
+  stopEditing()
+}
 </script>
