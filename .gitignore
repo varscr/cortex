@@ -1,14 +1,21 @@
 # Secrets
 .env
+.claude/
+.claude.json
+.claude-code/
+*.credentials.json
 
-# Backups (too large for Git)
+# Database and Backups
 db/backups/*.sql
+postgres_data/
 
-# Node
+# Nuxt / Node
 node_modules/
 .nuxt/
 .output/
 dist/
+.env.*
+!.env.example
 
 # OS
 .DS_Store

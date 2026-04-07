@@ -50,8 +50,8 @@ services:
       - .:/app
       - /app/node_modules
       - /app/.nuxt
-      - /home/varscr/.claude/.credentials.json:/root/.claude/.credentials.json:ro
-      - /home/varscr/.claude.json:/root/.claude.json:ro
+      - ${CLAUDE_HOME_DIR}/.claude/.credentials.json:/root/.claude/.credentials.json:rw
+      - ${CLAUDE_HOME_DIR}/.claude.json:/root/.claude.json:rw
 
   backup:
     image: postgres:16-alpine
