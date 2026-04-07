@@ -2,6 +2,7 @@ import { buildSystemPrompt } from '../../utils/chat/context'
 import { loadAgentConfig } from '../../utils/agents/loader'
 import { createDriver } from '../../utils/llm/driver-factory'
 import { buildChatContext } from '../../utils/chat/rag'
+import type { CompletionResponse } from '../../utils/llm/types'
 
 export default defineEventHandler(async (event) => {
   const user = event.context.user
@@ -47,6 +48,15 @@ export default defineEventHandler(async (event) => {
   )
   const history = historyResult.rows
     .reverse()
+    // FILTER: Ensure system-generated error messages are not sent to the LLM
+    // as they break the expected conversation flow and cause "ghost" errors.
+    .filter((r: { role: string; content: string }) => {
+      if (r.role !== 'assistant') return true
+      const text = r.content.toLowerCase()
+      if (text.startsWith('claude cli authentication required')) return false
+      if (text.includes('authentication_error') || text.includes('api error: 401') || text.includes('invalid authentication credentials')) return false
+      return true
+    })
     .map((r: { role: string; content: string }) => ({ role: r.role as 'user' | 'assistant', content: r.content }))
 
   // 5. Load agent config with provider/model variables
@@ -59,13 +69,39 @@ export default defineEventHandler(async (event) => {
   // 6. Call LLM
   const driver = createDriver(session.model_provider)
   const start = Date.now()
-  const response = await driver.complete({
-    messages: history,
-    system: systemPrompt,
-    model: session.model_name,
-    maxTokens: config.model.max_tokens,
-    temperature: config.model.temperature,
-  })
+  let response: CompletionResponse
+  
+  try {
+    response = await driver.complete({
+      messages: history,
+      system: systemPrompt,
+      model: session.model_name,
+      maxTokens: config.model.max_tokens,
+      temperature: config.model.temperature,
+    })
+  } catch (err: any) {
+    console.error('[chat] driver error:', err.message)
+    
+    // If it's an auth error, return a helpful assistant message instead of crashing
+    if (err.message.includes('Authentication Error')) {
+      const authMessage = 'Claude CLI Authentication Required: Please run "claude login" in your terminal to authenticate, then try again.'
+      
+      const msgResult = await db.query(
+        `INSERT INTO chat_messages (session_id, role, content)
+         VALUES ($1, $2, $3)
+         RETURNING *`,
+        [session.id, 'assistant', authMessage]
+      )
+      
+      const updatedSession = await db.query('SELECT * FROM chat_sessions WHERE id = $1 AND user_id = $2', [session.id, user.id])
+      
+      return {
+        message: toChatMessage(msgResult.rows[0]),
+        session: toChatSession(updatedSession.rows[0]),
+      }
+    }
+    throw err
+  }
   const durationMs = Date.now() - start
 
   // 7. Save assistant message
