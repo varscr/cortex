@@ -48,7 +48,9 @@
               <span class="text-zinc-600">·</span>
               <span class="text-xs text-zinc-500">{{ typeLabel(entry.entryType) }}</span>
               <span v-for="tag in (entry.tags ?? []).slice(0, 3)" :key="tag" class="text-xs text-zinc-600">#{{ tag }}</span>
-              <span class="text-xs text-zinc-600 shrink-0">{{ formatDate(entry.date) }}</span>
+              <ClientOnly>
+                <span class="text-xs text-zinc-600 shrink-0">{{ formatDate(entry.date) }}</span>
+              </ClientOnly>
             </div>
             <p v-if="entry.content" class="text-sm text-zinc-500 truncate mt-0.5">{{ contentPreview(entry.content) }}</p>
           </div>

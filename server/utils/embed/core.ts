@@ -1,4 +1,5 @@
 import OpenAI from 'openai'
+import { db } from '../db'
 
 const MODEL = 'text-embedding-3-small'
 

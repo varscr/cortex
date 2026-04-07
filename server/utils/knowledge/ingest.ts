@@ -1,5 +1,12 @@
 import { runAgent } from '../agents/runner'
+import { db } from '../db'
+import { upsertKnowledgeEmbedding } from './embed'
 import type { KnowledgeEntryRow } from './types'
+import { createHash } from 'crypto'
+
+function computeContentHash(title: string, content: string): string {
+  return createHash('sha256').update(`${title}|${content}`).digest('hex')
+}
 
 interface ClaudeConversation {
   uuid: string

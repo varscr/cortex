@@ -1,3 +1,5 @@
+import { upsertDocument, deleteDocument } from './core'
+
 function buildEmbedText(row: LogEntryRow): string {
   let text = ''
   if (row.entry_type) text += `[${row.entry_type}] `

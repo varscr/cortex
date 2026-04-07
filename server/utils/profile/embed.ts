@@ -1,3 +1,5 @@
+import { upsertDocument, deleteDocument } from '../embed/core'
+
 // ── Experience ────────────────────────────────────────────────────────────────
 
 function buildExperienceText(row: ExperienceRow): string {

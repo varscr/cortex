@@ -1,3 +1,5 @@
+import { upsertDocument, deleteDocument } from '../embed/core'
+
 function buildEmbedText(row: KnowledgeEntryRow): string {
   let text = `[${row.category}] ${row.title}\n`
   text += row.content
