@@ -36,7 +36,7 @@ async function seed() {
     if (accountRes.rows.length === 0) {
       await db.query(
         'INSERT INTO "account" (id, "userId", "accountId", "providerId", password, "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, NOW(), NOW())',
-        [crypto.randomUUID(), userId, email, 'email', hash]
+        [crypto.randomUUID(), userId, email, 'credential', hash]
       )
       console.log('Account created.')
     } else {
