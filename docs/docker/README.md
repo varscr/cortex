@@ -1,64 +1,109 @@
-# Docker & Worktree Architecture
+# Docker Architecture
 
-This project uses a highly dynamic Docker Compose setup designed to support multiple parallel development sessions using Git worktrees.
+Cortex's Docker setup is built around one core goal: **supporting multiple parallel AI agent sessions**, each working independently on its own branch with its own isolated server and database.
 
-## Core Concepts
+This is achieved through a fully parameterized `docker-compose.yml` and Git worktrees. See `docs/worktrees/README.md` for the full worktree workflow.
 
-### 1. Parameterized Services
-The `docker-compose.yml` uses environment variables with sensible defaults. This allows you to "inject" different configurations without modifying the file.
+## How It Works
+
+### Parameterized Compose File
+
+`docker-compose.yml` uses environment variables with sensible defaults. Every port, path, and URL is injectable — no file edits needed to run a second instance.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `APP_PATH` | `.` | The host directory mounted to `/app` |
-| `APP_PORT` | `3000` | The external port for the Nuxt app |
-| `DB_PORT` | `5432` | The external port for PostgreSQL |
-| `ADMINER_PORT` | `8080` | The external port for the Adminer UI |
-| `AUTH_URL` | `http://localhost:3000` | The public URL for the browser |
-| `AUTH_URL_INTERNAL` | `http://localhost:3000` | The internal URL for SSR (server-side) |
+| `APP_PATH` | `.` | Host directory mounted to `/app` in the container |
+| `APP_PORT` | `3000` | External port for the Nuxt app |
+| `DB_PORT` | `5432` | External port for PostgreSQL |
+| `ADMINER_PORT` | `8080` | External port for Adminer UI |
+| `AUTH_URL` | `http://localhost:3000` | Public URL used by the browser |
+| `AUTH_URL_INTERNAL` | `http://localhost:3000` | Internal URL used by SSR (always port 3000 inside the container) |
 
-### 2. Isolation Modes
+### Project Namespacing
 
-#### Shared Database Mode
-Best for UI/Frontend testing where you want to use your existing data.
+Docker Compose's `-p <project>` flag isolates all containers, networks, and volumes under a project name. The main instance is `cortex`; worktrees get names like `cortex-my-feature`. They run in parallel without any interference.
+
+### Runtime Code Mounting
+
+The Dockerfile builds a base image (installs deps, Claude CLI, OpenCode). At runtime, the actual source code is mounted via `APP_PATH`. This means:
+- The same Docker image can serve any branch
+- Worktrees get their branch's code at runtime without rebuilding
+- `node_modules` lives in an anonymous volume — it's built once into the image and isolated from the host mount
+
+---
+
+## Running the Main Instance
+
 ```bash
-APP_PATH=./.claude/worktrees/feature-name \
-APP_PORT=3001 \
-AUTH_URL=http://localhost:3001 \
-AUTH_URL_INTERNAL=http://localhost:3000 \
-DATABASE_URL=postgresql://cortex:changeme@host.docker.internal:5432/cortex_db \
-docker compose -p cortex-feature-name up -d --no-deps cortex
+# Start everything
+docker compose up -d --build
+
+# Rebuild app only
+docker compose up -d --build cortex
+
+# View logs
+docker compose logs -f cortex
+
+# Access the database
+docker compose exec postgres psql -U cortex -d cortex_db
 ```
 
-#### Full Isolation Mode
-Best for destructive testing or database migrations.
+---
+
+## Running a Worktree Session
+
+Use the start script — it handles port allocation, worktree creation, Docker startup, and seeding automatically:
+
 ```bash
-APP_PATH=./.claude/worktrees/feature-name \
+./scripts/worktree-start.sh <name>
+```
+
+Or manually (full isolation — separate DB):
+
+```bash
+APP_PATH=./.claude/worktrees/my-feature \
 APP_PORT=3001 \
 DB_PORT=5433 \
 ADMINER_PORT=8081 \
 AUTH_URL=http://localhost:3001 \
 AUTH_URL_INTERNAL=http://localhost:3000 \
-docker compose -p cortex-feature-name up -d
+docker compose -p cortex-my-feature up -d
 ```
 
 ---
 
-## Common Operations
+## Auth URL Explained
 
-### Seeding an Admin User
-Since `disableSignUp` is enabled by default, use the provided script to create or reset users:
+Two separate URLs are needed because the app runs in two contexts:
+
+- **Browser** → accesses the app from the host machine, e.g. `http://localhost:3001`
+- **SSR (server-side rendering)** → runs inside the Docker container where the app is always on port 3000
+
+So for a worktree on external port 3001:
+- `AUTH_URL=http://localhost:3001` — what the browser sends requests to
+- `AUTH_URL_INTERNAL=http://localhost:3000` — what SSR uses inside the container
+
+## Services
+
+| Service | Port | Description |
+|---------|------|-------------|
+| `cortex` | 3000 | Nuxt 3 app |
+| `postgres` | 5432 | PostgreSQL 16 with pgvector |
+| `adminer` | 8080 | Database UI |
+| `backup` | — | Daily pg_dump, 7-day retention |
+
+---
+
+## Seeding an Admin User
+
+Sign-up is disabled. Use the seed script to create users:
 
 ```bash
-docker compose -p <project-name> exec cortex \
-  bun run scripts/seed-admin.ts <email> <password> <name>
+# Main instance
+docker compose exec cortex bun run scripts/seed-admin.ts <email> <password>
+
+# Worktree
+docker compose -p cortex-<name> exec cortex bun run scripts/seed-admin.ts <email> <password>
 ```
 
-### Viewing Logs
-```bash
-docker compose -p <project-name> logs -f cortex
-```
-
-### Stopping a Session
-```bash
-docker compose -p <project-name> down
-```
+The script creates a user + credential account with the correct `providerId = 'credential'` that Better Auth expects.

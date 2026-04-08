@@ -200,32 +200,20 @@ Create a `.toml` file in `agents/` with `name`, `description`, and `[model]` sec
 - Schema changes: edit existing file (all `IF NOT EXISTS`) or add a new numbered file
 
 ## Worktree Sessions
-Run multiple parallel sessions on different branches/worktrees.
+Cortex is designed to run multiple parallel AI agent sessions simultaneously — each on its own branch with a fully isolated server and database.
 
-### 1. Create Worktree
+### Start a Session
 ```bash
-git worktree add .claude/worktrees/<name> -b <branch>
+./scripts/worktree-start.sh <name>
+```
+Creates a `feature/<name>` branch, auto-assigns free ports, starts isolated Docker services, and seeds an admin user. Credentials default to `admin@dev.local` / `admin`.
+
+```bash
+# Custom branch or credentials
+./scripts/worktree-start.sh <name> <branch> <email> <password>
 ```
 
-### 2. Sync Configuration
-New worktrees might need updated config files (e.g., if code changed on `main` after worktree creation):
-```bash
-cp server/utils/auth.ts .claude/worktrees/<name>/server/utils/auth.ts
-cp scripts/seed-admin.ts .claude/worktrees/<name>/scripts/seed-admin.ts
-```
-
-### 3. Start Session
-```bash
-APP_PATH=./.claude/worktrees/<name> \
-APP_PORT=3001 \
-DB_PORT=5433 \
-ADMINER_PORT=8081 \
-AUTH_URL=http://localhost:3001 \
-AUTH_URL_INTERNAL=http://localhost:3000 \
-docker compose -p cortex-<name> up -d
-```
-Note: Omit `--no-deps` to ensure a private database is started for this worktree.
-See `docs/docker/README.md` for full documentation on port parameterization and isolation.
+See `docs/worktrees/README.md` for the full workflow and `docs/docker/README.md` for architecture details.
 
 ## Do NOT
 - Use an ORM — raw SQL with pg only
