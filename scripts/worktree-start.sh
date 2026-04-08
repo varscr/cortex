@@ -66,10 +66,29 @@ until curl -sf "http://localhost:${APP_PORT}/api/auth/session" > /dev/null 2>&1;
   fi
 done
 
+# ── DB migrations ─────────────────────────────────────────────────────────────
+# Run all init SQL files from the worktree — catches any schema changes on the
+# branch that aren't in the project root's db/init/ (which postgres used on init).
+# All files use IF NOT EXISTS so this is safe and idempotent.
+echo "Applying DB migrations from worktree..."
+for f in "${WORKTREE_PATH}/db/init/"*.sql; do
+  docker compose -p "${PROJECT}" exec -T postgres \
+    psql -U "${POSTGRES_USER:-cortex}" -d cortex_db < "$f" > /dev/null 2>&1 || true
+done
+
 # ── Seed ──────────────────────────────────────────────────────────────────────
 echo "Seeding admin user..."
 docker compose -p "${PROJECT}" exec -T cortex \
   bun run scripts/seed-admin.ts "${SEED_EMAIL}" "${SEED_PASSWORD}" "Admin"
+
+# ── VS Code setup ─────────────────────────────────────────────────────────────
+# Docker creates node_modules as root — remove it and reinstall locally so
+# VS Code can resolve types and provide intellisense.
+echo "Installing dependencies for VS Code..."
+sudo rm -rf "${WORKTREE_PATH}/node_modules"
+(cd "${WORKTREE_PATH}" && bun install --silent)
+echo "Generating Nuxt types..."
+(cd "${WORKTREE_PATH}" && bunx nuxt prepare 2>/dev/null)
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 echo ""
@@ -83,5 +102,5 @@ echo "  Adminer  : http://localhost:${ADMINER_PORT}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo "Logs   : docker compose -p ${PROJECT} logs -f cortex"
-echo "Stop   : ./scripts/worktree-stop.sh ${NAME}"
+echo "VS Code: code ${WORKTREE_PATH}"
 echo ""
