@@ -35,12 +35,19 @@ export function validateCardInput(body: any): { data?: CardInput; error?: string
     return { error: 'Tags must be an array of strings' }
   }
 
+  const tasks = body.tasks ?? []
+  if (!Array.isArray(tasks)) {
+    return { error: 'Tasks must be an array' }
+  }
+
   return {
     data: {
       title: body.title.trim(),
       description: body.description ?? null,
       tags: body.tags ?? [],
       dueDate: body.dueDate ?? null,
+      color: body.color ?? null,
+      tasks,
     }
   }
 }

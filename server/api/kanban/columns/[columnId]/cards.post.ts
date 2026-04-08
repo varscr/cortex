@@ -24,11 +24,14 @@ export default defineEventHandler(async (event) => {
   )
 
   const result = await db.query(
-    `INSERT INTO kanban_cards (column_id, title, description, tags, position, due_date)
-     VALUES ($1, $2, $3, $4, $5, $6::date)
+    `INSERT INTO kanban_cards (column_id, title, description, tags, position, due_date, color, tasks)
+     VALUES ($1, $2, $3, $4::text[], $5, $6::date, $7, $8::jsonb)
      RETURNING *`,
-    [columnId, data.title, data.description, data.tags, posResult.rows[0].next_pos, data.dueDate]
+    [columnId, data.title, data.description, data.tags, posResult.rows[0].next_pos, data.dueDate, data.color, JSON.stringify(data.tasks ?? [])]
   )
+
+  upsertKanbanEmbedding(result.rows[0], event.context.user.id)
+    .catch(err => console.error('[embed] kanban card create', result.rows[0].id, err))
 
   setResponseStatus(event, 201)
   return toKanbanCard(result.rows[0])

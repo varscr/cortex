@@ -116,5 +116,6 @@ const links = [
   { label: 'Log', icon: 'i-heroicons-book-open', to: '/log' },
   { label: 'Finances', icon: 'i-heroicons-banknotes', to: '/finances' },
   { label: 'Knowledge', icon: 'i-heroicons-academic-cap', to: '/knowledge' },
+  { label: 'Kanban', icon: 'i-heroicons-view-columns', to: '/kanban' },
 ]
 </script>

@@ -1,42 +1,3 @@
-// Database row types (snake_case)
-export interface KanbanBoardRow {
-  id: number
-  name: string
-  description: string | null
-  created_at: string
-  updated_at: string
-}
-
-export interface KanbanColumnRow {
-  id: number
-  board_id: number
-  name: string
-  position: number
-  color: string | null
-  created_at: string
-}
-
-export interface KanbanTaskRow {
-  id: string
-  name: string
-  finished: boolean
-}
-
-export interface KanbanCardRow {
-  id: number
-  column_id: number
-  title: string
-  description: string | null
-  tags: string[] | null
-  position: number
-  due_date: string | null
-  color: string | null
-  tasks: KanbanTaskRow[] | string
-  created_at: string
-  updated_at: string
-}
-
-// API types (camelCase)
 export interface KanbanBoard {
   id: number
   name: string
@@ -60,6 +21,7 @@ export interface KanbanColumn {
 
 export interface KanbanColumnDetail extends KanbanColumn {
   cards: KanbanCard[]
+  collapsed?: boolean
 }
 
 export interface KanbanTask {
@@ -82,7 +44,6 @@ export interface KanbanCard {
   updatedAt: string
 }
 
-// Input types
 export interface BoardInput {
   name: string
   description?: string | null
@@ -93,27 +54,11 @@ export interface ColumnInput {
   color?: string | null
 }
 
-export interface TaskInput {
-  id: string
-  name: string
-  finished: boolean
-}
-
 export interface CardInput {
   title: string
   description?: string | null
   tags?: string[]
   dueDate?: string | null
   color?: string | null
-  tasks?: TaskInput[]
-}
-
-export interface CardMoveInput {
-  cardId: number
-  targetColumnId: number
-  position: number
-}
-
-export interface ReorderInput {
-  orderedIds: number[]
+  tasks?: KanbanTask[]
 }

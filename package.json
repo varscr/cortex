@@ -12,7 +12,8 @@
     "openai": "^4.77.0",
     "pdf-parse": "^2.4.5",
     "pg": "^8.13.0",
-    "smol-toml": "^1.6.0"
+    "smol-toml": "^1.6.0",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@types/pdf-parse": "^1.1.5",
