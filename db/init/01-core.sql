@@ -50,6 +50,8 @@ CREATE TABLE IF NOT EXISTS kanban_cards (
     tags TEXT[],
     position INTEGER NOT NULL DEFAULT 0,
     due_date DATE,
+    color VARCHAR(20),
+    tasks JSONB NOT NULL DEFAULT '[]',
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
