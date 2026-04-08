@@ -16,6 +16,12 @@ export interface KanbanColumnRow {
   created_at: string
 }
 
+export interface KanbanTaskRow {
+  id: string
+  name: string
+  finished: boolean
+}
+
 export interface KanbanCardRow {
   id: number
   column_id: number
@@ -24,6 +30,8 @@ export interface KanbanCardRow {
   tags: string[] | null
   position: number
   due_date: string | null
+  color: string | null
+  tasks: KanbanTaskRow[] | string
   created_at: string
   updated_at: string
 }
@@ -54,6 +62,12 @@ export interface KanbanColumnDetail extends KanbanColumn {
   cards: KanbanCard[]
 }
 
+export interface KanbanTask {
+  id: string
+  name: string
+  finished: boolean
+}
+
 export interface KanbanCard {
   id: number
   columnId: number
@@ -62,6 +76,8 @@ export interface KanbanCard {
   tags: string[]
   position: number
   dueDate: string | null
+  color: string | null
+  tasks: KanbanTask[]
   createdAt: string
   updatedAt: string
 }
@@ -77,11 +93,19 @@ export interface ColumnInput {
   color?: string | null
 }
 
+export interface TaskInput {
+  id: string
+  name: string
+  finished: boolean
+}
+
 export interface CardInput {
   title: string
   description?: string | null
   tags?: string[]
   dueDate?: string | null
+  color?: string | null
+  tasks?: TaskInput[]
 }
 
 export interface CardMoveInput {
