@@ -199,6 +199,34 @@ Create a `.toml` file in `agents/` with `name`, `description`, and `[model]` sec
 - Auth schema in `db/init/05-auth.sql` — Better Auth tables (camelCase) + `user_id` columns on app tables
 - Schema changes: edit existing file (all `IF NOT EXISTS`) or add a new numbered file
 
+## Worktree Sessions
+Run multiple parallel sessions on different branches/worktrees.
+
+### 1. Create Worktree
+```bash
+git worktree add .claude/worktrees/<name> -b <branch>
+```
+
+### 2. Sync Configuration
+New worktrees might need updated config files (e.g., if code changed on `main` after worktree creation):
+```bash
+cp server/utils/auth.ts .claude/worktrees/<name>/server/utils/auth.ts
+cp scripts/seed-admin.ts .claude/worktrees/<name>/scripts/seed-admin.ts
+```
+
+### 3. Start Session
+```bash
+APP_PATH=./.claude/worktrees/<name> \
+APP_PORT=3001 \
+DB_PORT=5433 \
+ADMINER_PORT=8081 \
+AUTH_URL=http://localhost:3001 \
+AUTH_URL_INTERNAL=http://localhost:3000 \
+docker compose -p cortex-<name> up -d
+```
+Note: Omit `--no-deps` to ensure a private database is started for this worktree.
+See `docs/docker/README.md` for full documentation on port parameterization and isolation.
+
 ## Do NOT
 - Use an ORM — raw SQL with pg only
 - Add light mode styles — dark-only

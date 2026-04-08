@@ -1,4 +1,5 @@
 import { betterAuth } from 'better-auth'
+import { db } from './db'
 import type { H3Event } from 'h3'
 
 export const auth = betterAuth({

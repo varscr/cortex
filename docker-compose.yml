@@ -1,10 +1,9 @@
 services:
   postgres:
     image: pgvector/pgvector:pg16
-    container_name: cortex-postgres
     restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -21,10 +20,9 @@ services:
 
   adminer:
     image: adminer:latest
-    container_name: cortex-adminer
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "${ADMINER_PORT:-8080}:8080"
     depends_on:
       postgres:
         condition: service_healthy
@@ -33,21 +31,24 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: cortex-app
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${APP_PORT:-3000}:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/cortex_db
+      DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/cortex_db}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       AUTH_SECRET: ${AUTH_SECRET}
-      AUTH_URL: ${AUTH_URL}
+      AUTH_URL: ${AUTH_URL:-http://localhost:3000}
+      AUTH_URL_INTERNAL: ${AUTH_URL_INTERNAL:-http://localhost:3000}
+      NUXT_PUBLIC_AUTH_URL: ${AUTH_URL:-http://localhost:3000}
       NUXT_PUBLIC_APP_NAME: "Cortex"
     depends_on:
       postgres:
         condition: service_healthy
     volumes:
-      - .:/app
+      - ${APP_PATH:-.}:/app
       - /app/node_modules
       - /app/.nuxt
       - ${CLAUDE_HOME_DIR}/.claude/.credentials.json:/root/.claude/.credentials.json:rw
@@ -55,7 +56,6 @@ services:
 
   backup:
     image: postgres:16-alpine
-    container_name: cortex-backup
     restart: unless-stopped
     environment:
       PGHOST: postgres

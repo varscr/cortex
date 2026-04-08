@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     dirs: ['composables', 'composables/*/*.ts'],
   },
   runtimeConfig: {
+    authUrl: process.env.AUTH_URL_INTERNAL,
     public: {
       authUrl: process.env.AUTH_URL,
     }

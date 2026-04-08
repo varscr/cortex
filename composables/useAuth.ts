@@ -5,7 +5,8 @@ let authClient: any = null
 export function useAuth() {
   if (!authClient) {
     const config = useRuntimeConfig()
-    const baseURL = config.public.authUrl ? `${config.public.authUrl}/api/auth` : '/api/auth'
+    const base = process.server ? config.authUrl : config.public.authUrl
+    const baseURL = base ? `${base}/api/auth` : '/api/auth'
     authClient = createAuthClient({
       baseURL
     })
