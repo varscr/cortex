@@ -19,6 +19,9 @@ export default defineEventHandler(async (event) => {
 
   await db.query('DELETE FROM kanban_cards WHERE id = $1', [id])
 
+  deleteKanbanEmbedding(Number(id), user.id)
+    .catch(err => console.error('[embed] kanban card delete', id, err))
+
   // Recompact positions for remaining cards in this column
   await db.query(
     `UPDATE kanban_cards
