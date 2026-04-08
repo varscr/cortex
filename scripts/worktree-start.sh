@@ -55,7 +55,7 @@ docker compose -p "${PROJECT}" up -d --build
 
 # ── Wait for app ──────────────────────────────────────────────────────────────
 echo "Waiting for app to be ready..."
-MAX_WAIT=120
+MAX_WAIT=300
 ELAPSED=0
 until curl -sf "http://localhost:${APP_PORT}/api/auth/session" > /dev/null 2>&1; do
   sleep 3
