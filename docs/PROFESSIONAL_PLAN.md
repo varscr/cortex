@@ -18,7 +18,8 @@ The sidebar in `layouts/default.vue` will be refactored to include a **Non-Inter
 [ PROFESSIONAL ]      <-- Category Label (Non-clickable)
   |-- 👤 Profile       (Existing: Edit your bio, links, and languages)
   |-- 📄 My CV         (New: Code-driven, print-ready interactive resume)
-  `-- 💼 Portfolio     (New: Visual Project Showcase / "S" Repo integration)
+  |-- 💼 Portfolio     (New: Visual Project Showcase / "S" Repo integration)
+  `-- 🔍 Opportunities (New: Job feed scraped from LinkedIn, X, and the web)
 
 📝 Log
 💰 Finances
@@ -34,6 +35,14 @@ A high-fidelity, dynamic version of your `CV-AI-FOCUSED.html`.
 A visual gallery replacing your static `varscr.github.io` site.
 *   **Project Cards:** Interactive cards for Kargo, Manasara, and Cortex.
 *   **Centralized Updates:** Updating a project in the database automatically updates both the Portfolio and the CV.
+
+### 4. Job Opportunity Intelligence (`/profile/opportunities`)
+An automated feed of job opportunities scraped from LinkedIn, X (Twitter), and configurable websites, matched against your profile skills and experience.
+
+*   **Sources:** LinkedIn job search pages, X hashtags (`#hiring`, `#jobopening`, `#remotejobs`), and any custom URL (company career pages, job boards).
+*   **AI Matching:** Each opportunity is embedded and scored against your `profile_skills` and `profile_experience` vectors — top matches surface first.
+*   **Deduplication:** Content hash prevents storing the same posting twice.
+*   **Actions:** Mark as `saved`, `applied`, `rejected`, or `ignored` to track your pipeline.
 
 ---
 
@@ -72,6 +81,8 @@ To keep your private data hidden while sharing your portfolio with recruiters:
 
 ### Phase 5: CI/CD Automation
 *   Configure the GitHub Action for automated static extraction and branch deployment.
+
+### Phase 6: Job Opportunity Intelligence 
 
 ---
 
