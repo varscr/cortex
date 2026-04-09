@@ -117,5 +117,6 @@ const links = [
   { label: 'Finances', icon: 'i-heroicons-banknotes', to: '/finances' },
   { label: 'Knowledge', icon: 'i-heroicons-academic-cap', to: '/knowledge' },
   { label: 'Kanban', icon: 'i-heroicons-view-columns', to: '/kanban' },
+  { label: 'Notes', icon: 'i-heroicons-document-text', to: '/notes' },
 ]
 </script>
