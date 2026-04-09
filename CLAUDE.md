@@ -99,13 +99,22 @@ validate → `db.query()` → transform → return
 Vue 3 Composition API (`ref`, `reactive`, `computed`) — no Pinia, keep state local or in composables.
 
 ### UI Components
-Before making frontend changes, always check the component folders for reusable components:
+Before creating any new page or component, always review ALL existing component folders for reusable pieces:
+- `components/buttons/` - `<ButtonsPrimary />`, `<ButtonsSecondary />`, `<ButtonsDanger />`, `<ButtonsIcon />`, `<ButtonsConfirm />`
 - `components/modals/` - `<ModalsConfirm />`, `<ModalsForm />`
 - `components/filters/` - `<FiltersFilter />`
 - `components/forms/` - `<FormsTagInput />`
+- `components/cards/` - `<Cards />`, `<CardsPanel />`, `<CardsFilter />`
 - `components/ui/` - `<UiPageHeader />`
 
-If a suitable component exists, use and extend it. If not, create new reusable components in appropriate folders rather than one-off implementations.
+Never use raw `<button>`, `<select>`, or `window.confirm()` when a component already covers the use case. Always use:
+- `<ButtonsPrimary>` / `<ButtonsSecondary>` / `<ButtonsDanger>` for actions
+- `<ButtonsIcon>` for icon-only toggle buttons (supports `:active` for toggle state)
+- `<FiltersFilter>` for dropdown filters
+- `<FormsTagInput>` for tag inputs
+- `<ModalsConfirm>` for confirmation dialogs instead of `confirm()`
+
+If a new reusable component is needed that doesn't exist yet, ask the user before creating it or propose it as part of the plan.
 
 ### Component Structure
 Components are organized by feature in subdirectories with `pathPrefix: true`:
