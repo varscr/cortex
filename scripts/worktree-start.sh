@@ -57,7 +57,7 @@ docker compose -p "${PROJECT}" up -d --build
 echo "Waiting for app to be ready..."
 MAX_WAIT=300
 ELAPSED=0
-until curl -sf "http://localhost:${APP_PORT}/api/auth/session" > /dev/null 2>&1; do
+until curl -sf "http://localhost:${APP_PORT}/api/auth/get-session" > /dev/null 2>&1; do
   sleep 3
   ELAPSED=$((ELAPSED + 3))
   if [[ $ELAPSED -ge $MAX_WAIT ]]; then
@@ -82,10 +82,10 @@ docker compose -p "${PROJECT}" exec -T cortex \
   bun run scripts/seed-admin.ts "${SEED_EMAIL}" "${SEED_PASSWORD}" "Admin"
 
 # ── VS Code setup ─────────────────────────────────────────────────────────────
-# Docker creates node_modules as root — remove it and reinstall locally so
-# VS Code can resolve types and provide intellisense.
+# Docker creates node_modules as root inside the anonymous volume — use a
+# temporary container to remove it so no sudo is needed on the host.
 echo "Installing dependencies for VS Code..."
-sudo rm -rf "${WORKTREE_PATH}/node_modules"
+docker run --rm -v "$(pwd)/${WORKTREE_PATH}:/app" alpine sh -c "rm -rf /app/node_modules"
 (cd "${WORKTREE_PATH}" && bun install --silent)
 echo "Generating Nuxt types..."
 (cd "${WORKTREE_PATH}" && bunx nuxt prepare 2>/dev/null)
