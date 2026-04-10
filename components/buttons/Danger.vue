@@ -44,5 +44,5 @@ const sizeClasses = {
   lg: 'text-base px-5 py-2.5'
 }
 
-const baseClasses = 'bg-red-600 text-white hover:bg-red-500'
+const baseClasses = 'bg-red-950/60 text-red-400 hover:bg-red-900/60'
 </script>

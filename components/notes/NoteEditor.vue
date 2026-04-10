@@ -15,6 +15,7 @@
           class="flex-1 bg-transparent text-base font-semibold text-zinc-100 placeholder-zinc-600 outline-none"
         />
         <div class="flex items-center gap-2 shrink-0">
+          <span v-if="saveStatus" class="text-xs" :class="saveStatus === 'Saved' ? 'text-zinc-500' : 'text-zinc-600'">{{ saveStatus }}</span>
           <ButtonsIcon
             icon="i-heroicons-map-pin"
             :active="form.isPinned"
@@ -22,7 +23,7 @@
             @click="form.isPinned = !form.isPinned"
           />
           <ButtonsDanger v-if="!isNew" label="Delete" :loading="deleting" @click="showConfirm = true" />
-          <ButtonsPrimary label="Save" :loading="saving" @click="handleSave" />
+          <ButtonsPrimary label="Save" :loading="saving" @click="handleSave(true)" />
         </div>
       </div>
 
@@ -78,6 +79,9 @@ const typeOptions = [
 const saving = ref(false)
 const deleting = ref(false)
 const showConfirm = ref(false)
+const saveStatus = ref('')
+const resetting = ref(false)
+let autoSaveTimer: ReturnType<typeof setTimeout> | null = null
 
 const form = reactive({
   title: '',
@@ -90,6 +94,7 @@ const form = reactive({
 watch(
   () => props.note,
   (note) => {
+    resetting.value = true
     if (note) {
       form.title = note.title
       form.content = note.content
@@ -97,6 +102,8 @@ watch(
       form.tags = [...note.tags]
       form.isPinned = note.isPinned
     }
+    saveStatus.value = ''
+    nextTick(() => { resetting.value = false })
   },
   { immediate: true },
 )
@@ -105,21 +112,38 @@ watch(
   () => props.isNew,
   (val) => {
     if (val) {
+      resetting.value = true
       form.title = ''
       form.content = ''
       form.type = 'general'
       form.tags = []
       form.isPinned = false
+      saveStatus.value = ''
+      nextTick(() => { resetting.value = false })
     }
   },
 )
 
-async function handleSave() {
+watch(
+  () => ({ ...form }),
+  () => {
+    if (resetting.value || saving.value) return
+    if (!form.title.trim()) return
+    if (autoSaveTimer) clearTimeout(autoSaveTimer)
+    saveStatus.value = 'Saving…'
+    autoSaveTimer = setTimeout(handleSave, 1500)
+  },
+  { deep: true },
+)
+
+async function handleSave(manual = false) {
   if (!form.title.trim()) {
-    toast.add({ title: 'Title is required', color: 'red' })
+    if (manual) toast.add({ title: 'Title is required', color: 'red' })
     return
   }
+  if (autoSaveTimer) { clearTimeout(autoSaveTimer); autoSaveTimer = null }
   saving.value = true
+  saveStatus.value = 'Saving…'
   try {
     const body = {
       title: form.title.trim(),
@@ -132,8 +156,10 @@ async function handleSave() {
       ? await createNote(body)
       : await updateNote(props.note.id, body)
     emit('saved', saved)
-    toast.add({ title: 'Note saved', color: 'green' })
+    saveStatus.value = 'Saved'
+    if (manual) toast.add({ title: 'Note saved', color: 'green' })
   } catch {
+    saveStatus.value = ''
     toast.add({ title: 'Failed to save note', color: 'red' })
   } finally {
     saving.value = false
