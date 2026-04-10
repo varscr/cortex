@@ -30,3 +30,6 @@ data/finances/
 
 # Logs
 build.log
+
+# Projects
+docs/info/projects/*.md
