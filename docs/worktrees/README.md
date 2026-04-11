@@ -54,34 +54,37 @@ Docker project `cortex-my-feature` runs with isolated containers:
 - `cortex-my-feature-postgres-1` — fresh PostgreSQL with its own volume
 - `cortex-my-feature-adminer-1` — Adminer UI
 
-## Merging Work Back to Main
+## Stopping a Session
 
-When an agent is done and the feature looks good:
+When a session is done, use the stop script to tear everything down and merge the branch into `main`:
 
 ```bash
-# Review the changes
-git log main..feature/my-feature
-
-# Merge (or open a PR if preferred)
-git merge feature/my-feature
-
-# Or rebase
-git rebase feature/my-feature
+./scripts/worktree-stop.sh <name>
 ```
 
-## Manual Cleanup
+This single command:
+1. Stops the Docker stack and removes its volumes
+2. Removes the worktree directory
+3. Checks out `main` and merges the branch with `--no-ff` (preserving branch history)
+4. If there are conflicts → aborts the merge cleanly, leaves `main` untouched, and prints instructions to resolve manually
 
-After merging, stop the Docker stack and remove the worktree:
+The local branch is **always kept** after stopping so you can push it to the remote when ready:
 
 ```bash
-# Stop containers and delete the isolated volume
-docker compose -p cortex-my-feature down -v
+git push -u origin feature/<name>
+```
 
-# Remove the worktree directory
-git worktree remove .claude/worktrees/my-feature
+### Conflict resolution
 
-# Delete the branch (once merged)
-git branch -d feature/my-feature
+If the stop script reports a conflict:
+
+```bash
+# Retry the merge manually
+git merge --no-ff feature/<name>
+
+# Fix conflicts in your editor, then:
+git add .
+git commit
 ```
 
 ## Port Allocation

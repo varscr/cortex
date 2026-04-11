@@ -222,6 +222,12 @@ Creates a `feature/<name>` branch, auto-assigns free ports, starts isolated Dock
 ./scripts/worktree-start.sh <name> <branch> <email> <password>
 ```
 
+### Stop a Session
+```bash
+./scripts/worktree-stop.sh <name>
+```
+Stops Docker services, removes the worktree directory, and merges the branch into `main` with `--no-ff`. If the merge has conflicts, it aborts cleanly and prints instructions — the branch is always kept locally so you can push it later.
+
 See `docs/worktrees/README.md` for the full workflow and `docs/docker/README.md` for architecture details.
 
 ## Do NOT
