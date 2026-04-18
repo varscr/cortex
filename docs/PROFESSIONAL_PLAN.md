@@ -17,9 +17,9 @@ The sidebar in `layouts/default.vue` will be refactored to include a **Non-Inter
 
 [ PROFESSIONAL ]      <-- Category Label (Non-clickable)
   |-- 👤 Profile       (Existing: Edit your bio, links, and languages)
-  |-- 📄 My CV         (New: Code-driven, print-ready interactive resume)
-  |-- 💼 Portfolio     (New: Visual Project Showcase / "S" Repo integration)
-  `-- 🔍 Opportunities (New: Job feed scraped from LinkedIn, X, and the web)
+  |-- 📄 My CV         (New: Code-driven, print-ready interactive resume) (My existing cv is in ~/server/assets/CV-AI-FOCUSED.html)
+  |-- 💼 Portfolio     (New: Visual Project Showcase / "S" Repo integration) (can you create a porfolio from scratch? this is a question i need you to response) 
+  `-- 🔍 Opportunities (New: Job feed scraped from LinkedIn, X, and the web) (i don't want to implement this for now just have the page there)
 
 📝 Log
 💰 Finances
@@ -36,6 +36,8 @@ A visual gallery replacing your static `varscr.github.io` site.
 *   **Project Cards:** Interactive cards for Kargo, Manasara, and Cortex.
 *   **Centralized Updates:** Updating a project in the database automatically updates both the Portfolio and the CV.
 
+(I think we can create it form scratch and connect it with the actual git hub repo i have just give me the instrcutions if we can change it form this repo and make commits form here that would be greate, that's what i want, ask me if you don't understand)
+
 ### 4. Job Opportunity Intelligence (`/profile/opportunities`)
 An automated feed of job opportunities scraped from LinkedIn, X (Twitter), and configurable websites, matched against your profile skills and experience.
 
@@ -44,8 +46,10 @@ An automated feed of job opportunities scraped from LinkedIn, X (Twitter), and c
 *   **Deduplication:** Content hash prevents storing the same posting twice.
 *   **Actions:** Mark as `saved`, `applied`, `rejected`, or `ignored` to track your pipeline.
 
+(just create like the sections and idea but remmeber we don't want to implement the scrapper just the idea and the page to implement in the future)
 ---
 
+(You can change the technical dessition)
 ## 🛠️ Technical Strategy
 
 ### 📡 Data Flow
