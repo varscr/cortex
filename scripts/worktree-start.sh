@@ -25,11 +25,15 @@ WORKTREE_PATH=".claude/worktrees/${NAME}"
 PROJECT="cortex-${NAME}"
 
 # ── Port allocation ────────────────────────────────────────────────────────────
+# Ports reserved for other services on this server — worktrees will skip these.
+RESERVED_PORTS=(3100 5500 8100)  # kargo standalone
+
 # Find the first free port starting from $1
 find_free_port() {
   local port="${1}"
   while docker ps --format '{{.Ports}}' 2>/dev/null | grep -q "0\.0\.0\.0:${port}->" || \
-        ss -tlnp 2>/dev/null | grep -q ":${port} "; do
+        ss -tlnp 2>/dev/null | grep -q ":${port} " || \
+        [[ " ${RESERVED_PORTS[*]} " == *" ${port} "* ]]; do
     port=$((port + 1))
   done
   echo "${port}"
